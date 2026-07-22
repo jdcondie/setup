@@ -5,6 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Setup</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script>
+/* Anyone arriving with a personal link (?client=Name) goes straight to the
+   setup quiz, params intact. A bare visit to the root sees the neutral page
+   below. Lets Jay send the short link: /setup/?client=Ryan */
+if (location.search || location.hash) {
+  location.replace('foundation-setup.html' + location.search + location.hash);
+}
+</script>
 <style>
   body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#fafafa;color:#3d3d3d;font-family:'Plus Jakarta Sans',system-ui,sans-serif;padding:24px}
   .card{max-width:440px;text-align:center}
