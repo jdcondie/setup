@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What's your admin actually costing you?</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --orange:#E8541A;--orange-light:#FFF3EE;--orange-mid:#F97440;
+  --black:#111;--gray-700:#3d3d3d;--gray-500:#717171;--gray-300:#d4d4d4;--gray-100:#f5f5f5;--gray-50:#fafafa;--white:#fff;
+  --green:#16a34a;--green-bg:#dcfce7;--red:#dc2626;--red-bg:#fee2e2;--blue:#2563eb;--blue-bg:#eff6ff;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--gray-50);color:var(--black);font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;line-height:1.6}
+header{background:var(--white);border-bottom:1px solid var(--gray-300);padding:22px 24px}
+.head-inner{max-width:1160px;margin:0 auto}
+.eyebrow{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--orange);margin-bottom:6px}
+h1{font-size:clamp(24px,3.8vw,34px);font-weight:800;letter-spacing:-.02em;line-height:1.15}
+.sub{font-size:15px;color:var(--gray-500);margin-top:6px;max-width:640px}
+.layout{max-width:1160px;margin:0 auto;padding:24px;display:grid;grid-template-columns:1fr 400px;gap:24px;align-items:start}
+.panel{background:var(--white);border:1.5px solid var(--gray-300);border-radius:14px;padding:22px 24px;margin-bottom:16px}
+.panel h2{font-size:18px;font-weight:800;letter-spacing:-.02em;margin-bottom:4px}
+.panel .hint{font-size:13px;color:var(--gray-500);margin-bottom:14px}
+label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--gray-500);margin-bottom:4px}
+input{width:100%;font-family:inherit;font-size:14px;padding:9px 12px;border:1.5px solid var(--gray-300);border-radius:8px;background:var(--gray-50);color:var(--black)}
+input:focus{outline:none;border-color:var(--orange);background:var(--white)}
+.row2{display:grid;grid-template-columns:150px 1fr;gap:12px}
+.bn{border:1.5px solid var(--gray-300);border-radius:12px;padding:14px 16px;margin-bottom:12px;background:var(--gray-50)}
+.bn-top{margin-bottom:9px}
+.bn-name{font-weight:700;font-size:14.5px}
+.bn-desc{font-size:12.5px;color:var(--gray-500)}
+.bn-ctrl{display:grid;grid-template-columns:1fr 120px;gap:10px;align-items:center}
+.freq{display:flex;gap:5px;flex-wrap:wrap}
+.fp{font-family:inherit;font-size:11.5px;font-weight:600;padding:5px 10px;border-radius:100px;border:1.5px solid var(--gray-300);background:var(--white);color:var(--gray-700);cursor:pointer;transition:all .12s}
+.fp:hover{border-color:var(--gray-500)}
+.fp.on{background:var(--orange);border-color:var(--orange);color:var(--white)}
+.mins{display:flex;align-items:center;gap:6px}
+.mins input{width:60px;text-align:center;padding:6px}
+.mins small{font-size:11px;color:var(--gray-500)}
+.btn{font-family:inherit;font-weight:700;font-size:13px;padding:9px 16px;border-radius:8px;cursor:pointer;border:1.5px solid var(--gray-300);background:var(--white);color:var(--gray-700);transition:all .12s;text-decoration:none;display:inline-block;text-align:center}
+.btn:hover{border-color:var(--gray-500)}
+.btn.orange{background:var(--orange);border-color:var(--orange);color:var(--white)}
+.btn.orange:hover{background:var(--orange-mid)}
+.btn.copied{background:var(--green);border-color:var(--green);color:var(--white)}
+.results-wrap{position:sticky;top:24px}
+.total{background:var(--orange);color:#fff;border-radius:14px;padding:20px;text-align:center;margin-bottom:14px}
+.total .big{font-size:30px;font-weight:800;letter-spacing:-.02em;line-height:1.1}
+.total .lbl{font-size:13px;opacity:.9;margin-top:4px}
+.rank{background:var(--white);border:1.5px solid var(--gray-300);border-radius:12px;padding:8px 16px 12px;margin-bottom:14px}
+.ritem{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px dashed var(--gray-300)}
+.ritem:last-child{border-bottom:none}
+.ritem .n{flex:none;width:22px;height:22px;border-radius:50%;background:var(--orange-light);color:var(--orange);font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.ritem .body{flex:1;min-width:0}
+.ritem .fix{font-size:13px;font-weight:700;color:var(--black);line-height:1.3}
+.ritem .cost{font-size:12px;color:var(--gray-500)}
+.ritem .dollar{font-size:13px;font-weight:800;color:var(--orange);white-space:nowrap}
+.empty{color:var(--gray-500);font-style:italic;font-size:13px;padding:12px 0}
+.cta{background:var(--white);border:1.5px solid var(--gray-300);border-radius:12px;padding:18px;text-align:center}
+.cta h3{font-size:17px;font-weight:800;margin-bottom:6px}
+.cta p{font-size:13px;color:var(--gray-500);margin-bottom:14px;line-height:1.5}
+.cta .btn{width:100%;font-size:15px;padding:12px}
+.cta .copy{margin-top:8px;width:100%}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.results-wrap{position:static}}
+</style>
+</head>
+<body>
+<header><div class="head-inner">
+  <div class="eyebrow">Free · 3 minutes</div>
+  <h1>What's your admin actually costing you?</h1>
+  <p class="sub">Rate how often these hit you. We'll add up the hours and the dollars, and show you which ones AI can take off your plate first. The number usually surprises people.</p>
+</div></header>
+
+<div class="layout">
+  <div>
+    <div class="panel">
+      <h2>Start here</h2>
+      <div class="row2">
+        <div><label>Your time ($/hr)</label><input id="rate" type="number" value="75"></div>
+        <div><label>Business (optional)</label><input id="biz" placeholder="Ridgeline HVAC"></div>
+      </div>
+    </div>
+    <div class="panel">
+      <h2>How often does each of these hit you?</h2>
+      <div class="hint">Set the frequency, and tweak the minutes if yours is different. Skip anything that doesn't apply.</div>
+      <div id="items"></div>
+    </div>
+  </div>
+
+  <div class="results-wrap">
+    <div class="total" id="total"><div class="big">$0</div><div class="lbl">Set some rows to see the damage</div></div>
+    <div class="rank" id="rank"><div class="empty">Your ranked list shows up here as you go.</div></div>
+    <div class="cta">
+      <h3>Want these fixed?</h3>
+      <p>In a free 30-minute audit we'll map your top 2-3 fixes with real numbers. The findings are yours either way, no pitch.</p>
+      <a class="btn orange" href="[BOOKING-LINK]">Book your free audit</a>
+      <button class="btn copy" id="copyBtn">Copy my results</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const FREQ=[['Never',0],['A few times a month',30],['A few times a week',150],['Every day',260],['Many times a day',1000]];
+const ITEMS=[
+  {id:'faq',name:'Answering the same email questions',desc:'Pricing, availability, "do you service my area"',min:5,fix:'Inbox triage'},
+  {id:'quote',name:'Writing quotes or estimates',desc:'Turning a site visit into a sent price',min:40,fix:'Quote drafting'},
+  {id:'miss',name:'Missed calls while you are working',desc:'Calls that go to voicemail and never call back',min:10,fix:'Missed-call text-back'},
+  {id:'sched',name:'Scheduling back-and-forth',desc:'Texts and calls just to book one appointment',min:15,fix:'Scheduling & reminders'},
+  {id:'remind',name:'Reminding customers about appointments',desc:'So they actually show up',min:10,fix:'Scheduling & reminders'},
+  {id:'invoice',name:'Chasing unpaid invoices',desc:'The awkward "you still owe us" follow-up',min:15,fix:'Invoice follow-up (retainer add-on)'},
+  {id:'askrev',name:'Asking for reviews',desc:'Remembering to, and actually doing it',min:10,fix:'Reviews'},
+  {id:'reprev',name:'Replying to online reviews',desc:'Good and bad ones on Google',min:10,fix:'Reviews'},
+  {id:'numbers',name:'Pulling together your weekly numbers',desc:'How did the week go, from 3 different apps',min:60,fix:'The Monday report'},
+  {id:'twice',name:'Entering the same info twice',desc:'From a call, into a calendar, into a CRM',min:10,fix:'Workflow cleanup'},
+  {id:'triage',name:'Sorting your inbox',desc:'Before you can even start replying',min:20,fix:'Inbox triage'},
+  {id:'expect',name:'Sending the same "what to expect" info',desc:'Directions, prep, what to have ready',min:10,fix:'Templated replies'}
+];
+const state={};
+ITEMS.forEach(it=>state[it.id]={freq:0,min:it.min});
+
+function renderItems(){
+  $('items').innerHTML=ITEMS.map(it=>{
+    const s=state[it.id];
+    const fp=FREQ.map((f,i)=>`<button class="fp${s.freq===i?' on':''}" data-freq="${it.id}:${i}">${f[0]}</button>`).join('');
+    return `<div class="bn">
+      <div class="bn-top"><div class="bn-name">${it.name}</div><div class="bn-desc">${it.desc}</div></div>
+      <div class="bn-ctrl">
+        <div class="freq">${fp}</div>
+        <div class="mins"><input type="number" data-min="${it.id}" value="${s.min}"><small>min each</small></div>
+      </div>
+    </div>`;
+  }).join('');
+  document.querySelectorAll('[data-freq]').forEach(b=>b.onclick=()=>{const[id,i]=b.dataset.freq.split(':');state[id].freq=Number(i);renderItems();render()});
+  document.querySelectorAll('[data-min]').forEach(inp=>inp.oninput=()=>{state[inp.dataset.min].min=Number(inp.value)||0;render()});
+}
+
+function compute(){
+  const rate=Number($('rate').value)||0;
+  const rows=ITEMS.map(it=>{
+    const s=state[it.id];const perYear=FREQ[s.freq][1];
+    const hours=perYear*s.min/60;const cost=hours*rate;
+    return {name:it.name,fix:it.fix,hours,cost,active:s.freq>0&&s.min>0};
+  }).filter(r=>r.active).sort((a,b)=>b.cost-a.cost);
+  const totalHours=rows.reduce((a,r)=>a+r.hours,0);
+  const totalCost=rows.reduce((a,r)=>a+r.cost,0);
+  return {rows,totalHours,totalCost};
+}
+function money(n){return '$'+Math.round(n).toLocaleString()}
+function hrs(n){return Math.round(n).toLocaleString()}
+
+function render(){
+  const {rows,totalHours,totalCost}=compute();
+  if(!rows.length){
+    $('total').innerHTML='<div class="big">$0</div><div class="lbl">Set some rows to see the damage</div>';
+    $('rank').innerHTML='<div class="empty">Your ranked list shows up here as you go.</div>';
+    return;
+  }
+  $('total').innerHTML=`<div class="big">${hrs(totalHours)} hrs · ${money(totalCost)}</div><div class="lbl">a year on work that follows a pattern</div>`;
+  $('rank').innerHTML=rows.map((r,i)=>`<div class="ritem">
+    <span class="n">${i+1}</span>
+    <div class="body"><div class="fix">${r.fix}</div><div class="cost">${r.name} · ${hrs(r.hours)} hrs/yr</div></div>
+    <span class="dollar">${money(r.cost)}</span>
+  </div>`).join('');
+}
+
+function summaryText(){
+  const {rows,totalHours,totalCost}=compute();
+  const rate=Number($('rate').value)||0;
+  let t=`My admin is costing me about ${hrs(totalHours)} hours and ${money(totalCost)} a year (at $${rate}/hr).\n\nMy biggest time-wasters:\n`;
+  rows.forEach((r,i)=>t+=`${i+1}. ${r.name}: ${hrs(r.hours)} hrs / ${money(r.cost)} a year (fix: ${r.fix})\n`);
+  t+=`\nI'd like to book the free audit.`;
+  return t;
+}
+function markdown(){
+  const {rows,totalHours,totalCost}=compute();
+  const rate=Number($('rate').value)||0;const biz=$('biz').value.trim()||'[Business]';
+  let t=`# ${biz}: bottleneck triage\n> Self-reported. At $${rate}/hr.\n\nTotal: ~${hrs(totalHours)} hours and ${money(totalCost)}/year on pattern work.\n\n## Ranked\n`;
+  rows.forEach((r,i)=>t+=`${i+1}. ${r.name}: ${hrs(r.hours)}h / ${money(r.cost)}/yr, fix with ${r.fix}\n`);
+  return t;
+}
+
+function copyText(text,btn){
+  const orig=btn.textContent;
+  const ok=()=>{btn.textContent='Copied ✓';btn.classList.add('copied');setTimeout(()=>{btn.textContent=orig;btn.classList.remove('copied')},1500)};
+  const legacy=()=>{const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();let done=false;try{done=document.execCommand('copy')}catch(e){}document.body.removeChild(ta);if(done){ok()}else{btn.textContent='Press Cmd+C';setTimeout(()=>btn.textContent=orig,2000)}};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(ok).catch(legacy)}else{legacy()}
+}
+
+$('rate').oninput=render;$('biz').oninput=render;
+$('copyBtn').onclick=e=>copyText(summaryText(),e.target);
+renderItems();render();
+</script>
+</body>
+</html>

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Report Designer</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --orange:#E8541A;--orange-light:#FFF3EE;--orange-mid:#F97440;
+  --black:#111;--gray-700:#3d3d3d;--gray-500:#717171;--gray-300:#d4d4d4;--gray-100:#f5f5f5;--gray-50:#fafafa;--white:#fff;
+  --green:#16a34a;--green-bg:#dcfce7;--red:#dc2626;--red-bg:#fee2e2;--blue:#2563eb;--blue-bg:#eff6ff;--yellow-bg:#fef9c3;--yellow:#ca8a04;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--gray-50);color:var(--black);font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;line-height:1.6}
+header{background:var(--white);border-bottom:1px solid var(--gray-300);padding:22px 24px}
+.head-inner{max-width:1160px;margin:0 auto}
+.eyebrow{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--orange);margin-bottom:6px}
+h1{font-size:clamp(24px,3.5vw,32px);font-weight:800;letter-spacing:-.02em;line-height:1.15}
+.sub{font-size:15px;color:var(--gray-500);margin-top:6px;max-width:640px}
+.layout{max-width:1160px;margin:0 auto;padding:24px;display:grid;grid-template-columns:1fr 400px;gap:24px;align-items:start}
+.panel{background:var(--white);border:1.5px solid var(--gray-300);border-radius:14px;padding:22px 24px;margin-bottom:16px}
+.panel h2{font-size:18px;font-weight:800;letter-spacing:-.02em;margin-bottom:4px}
+.panel .hint{font-size:13px;color:var(--gray-500);margin-bottom:14px}
+label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--gray-500);margin-bottom:4px}
+input{width:100%;font-family:inherit;font-size:14px;padding:9px 12px;border:1.5px solid var(--gray-300);border-radius:8px;background:var(--gray-50);color:var(--black)}
+input:focus{outline:none;border-color:var(--orange);background:var(--white)}
+.field{margin-bottom:12px}
+.check{display:flex;gap:10px;align-items:center;padding:7px 0;cursor:pointer}
+.check input{width:17px;height:17px;accent-color:var(--orange);flex:none;cursor:pointer}
+.check span{font-size:14px;color:var(--gray-700)}
+.pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px}
+.pill{font-family:inherit;font-size:12.5px;font-weight:600;padding:6px 13px;border-radius:100px;border:1.5px solid var(--gray-300);background:var(--white);color:var(--gray-700);cursor:pointer;transition:all .12s}
+.pill:hover{border-color:var(--gray-500)}
+.pill.on{background:var(--orange);border-color:var(--orange);color:var(--white)}
+.floor{display:grid;grid-template-columns:1fr 90px;gap:10px;align-items:center;margin-bottom:9px}
+.floor span{font-size:13.5px;color:var(--gray-700)}
+.btn{font-family:inherit;font-weight:700;font-size:13px;padding:9px 16px;border-radius:8px;cursor:pointer;border:1.5px solid var(--gray-300);background:var(--white);color:var(--gray-700);transition:all .12s}
+.btn:hover{border-color:var(--gray-500)}
+.btn.orange{background:var(--orange);border-color:var(--orange);color:var(--white)}
+.btn.orange:hover{background:var(--orange-mid)}
+.btn.copied{background:var(--green);border-color:var(--green);color:var(--white)}
+.preview-wrap{position:sticky;top:24px}
+.mock{background:var(--white);border:1.5px solid var(--gray-300);border-radius:12px;padding:16px 18px;margin-bottom:12px;font-size:13px;line-height:1.6}
+.mock .subj{font-weight:800;font-size:13.5px;padding-bottom:8px;margin-bottom:8px;border-bottom:1px solid var(--gray-300)}
+.mock .sec{margin-bottom:7px}
+.mock .k{font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--gray-500)}
+.mock .warn{background:var(--yellow-bg);color:#8a6d00;border-radius:6px;padding:5px 9px;margin:6px 0;font-weight:600;font-size:12.5px}
+.mock .one{color:var(--orange);font-weight:700}
+.mock .foot{font-size:11px;color:var(--gray-500);border-top:1px solid var(--gray-300);margin-top:8px;padding-top:7px}
+.preview{background:#16181d;color:#e8e8e8;border-radius:12px;padding:16px;font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:11.5px;line-height:1.55;white-space:pre-wrap;word-break:break-word;max-height:34vh;overflow-y:auto}
+.pv-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--gray-500);margin:2px 0 6px}
+.pv-actions{display:flex;gap:8px;margin-top:12px}
+.pv-actions .btn{flex:1}
+.done-note{font-size:12px;color:var(--gray-500);margin-top:10px;line-height:1.5}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.preview-wrap{position:static}}
+</style>
+</head>
+<body>
+<header><div class="head-inner">
+  <div class="eyebrow">Setup homework · 10 minutes</div>
+  <h1>Design Your Monday Report</h1>
+  <p class="sub">Every Monday you'll get one email: your week in 90 seconds. You get to decide what's in it. Pick your numbers below and watch your report build itself on the right.</p>
+</div></header>
+
+<div class="layout">
+  <div>
+    <div class="panel">
+      <h2>The basics</h2>
+      <div class="field"><label>Business name</label><input id="biz" placeholder="Ridgeline HVAC"></div>
+      <div class="field"><label>If you could see ONE number every Monday, what would it be?</label><input id="oneNum" placeholder="Money collected this week"><div class="hint" style="margin:4px 0 0">We'll put a star on it.</div></div>
+    </div>
+
+    <div class="panel">
+      <h2>Leads</h2>
+      <div class="hint">What counts as a lead worth tracking?</div>
+      <div id="leads"></div>
+    </div>
+
+    <div class="panel">
+      <h2>Jobs</h2>
+      <div id="jobs"></div>
+    </div>
+
+    <div class="panel">
+      <h2>Money</h2>
+      <div class="hint">Where should the money numbers come from?</div>
+      <div class="field"><div class="pills" data-pillgroup="moneysrc">
+        <button class="pill" data-val="QuickBooks (read-only)">QuickBooks (read-only)</button>
+        <button class="pill" data-val="What's visible in email">What's visible in email</button>
+      </div></div>
+      <div id="money"></div>
+    </div>
+
+    <div class="panel">
+      <h2>Red-flag floors</h2>
+      <div class="hint">What makes a bad week? If any of these cross the line, we flag it at the very top.</div>
+      <div class="floor"><span>Fewer than this many new leads</span><input id="flLeads" placeholder="5"></div>
+      <div class="floor"><span>More than $ this outstanding past 30 days</span><input id="flOwed" placeholder="5000"></div>
+      <div class="floor"><span>More than this many no-shows</span><input id="flNoShow" placeholder="2"></div>
+      <div class="field" style="margin-top:8px"><label>Anything else that should trigger a warning</label><input id="flOther" placeholder="Any job that slips more than a week"></div>
+    </div>
+
+    <div class="panel">
+      <h2>Who reads it</h2>
+      <div class="field"><label>Besides you, who else gets the report?</label><input id="readers" placeholder="My wife, my lead tech"></div>
+    </div>
+  </div>
+
+  <div class="preview-wrap">
+    <div class="pv-label">What your Monday email looks like</div>
+    <div class="mock" id="mock"></div>
+    <div class="pv-label">The spec (this goes to Jay)</div>
+    <div class="preview" id="preview"></div>
+    <div class="pv-actions">
+      <button class="btn orange" id="copyBtn">Copy the spec</button>
+      <button class="btn" id="dlBtn">Download</button>
+    </div>
+    <div class="done-note">When it looks right, copy it into an email back to Jay or download it. You designed your own report. Now you'll actually read it.</div>
+  </div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const moneysrc={val:''};
+const LEADS=[['calls','New calls'],['texts','Texts recovered by the auto-text'],['forms','Website form fills'],['referrals','Referrals'],['sources','Where leads came from']];
+const JOBS=[['booked','Jobs booked'],['completed','Jobs completed'],['upcoming','Jobs on the calendar this week'],['noshow','No-shows']];
+const MONEY=[['invoiced','Invoiced'],['collected','Collected'],['outstanding','Outstanding past 30 days']];
+const checked={};
+
+function renderChecks(){
+  $('leads').innerHTML=LEADS.map(([k,l])=>checkRow('l_'+k,l)).join('');
+  $('jobs').innerHTML=JOBS.map(([k,l])=>checkRow('j_'+k,l)).join('');
+  $('money').innerHTML=MONEY.map(([k,l])=>checkRow('m_'+k,l)).join('');
+  document.querySelectorAll('[data-chk]').forEach(cb=>{cb.checked=!!checked[cb.dataset.chk];cb.onchange=()=>{checked[cb.dataset.chk]=cb.checked;render()}});
+}
+function checkRow(id,label){return `<label class="check"><input type="checkbox" data-chk="${id}"><span>${label}</span></label>`}
+
+document.querySelectorAll('[data-pillgroup]').forEach(group=>{
+  group.querySelectorAll('.pill').forEach(p=>{
+    p.onclick=()=>{const was=p.classList.contains('on');group.querySelectorAll('.pill').forEach(x=>x.classList.remove('on'));if(!was){p.classList.add('on');moneysrc.val=p.dataset.val}else{moneysrc.val=''}render()};
+  });
+});
+
+function checkedIn(prefix,arr){return arr.filter(([k])=>checked[prefix+'_'+k]).map(([k,l])=>l)}
+
+function buildMd(){
+  const biz=$('biz').value.trim()||'[Business]';
+  let out=`# ${biz}: Monday report spec\n> One email, Monday 7am. Under 300 words, reads in 90 seconds.\n> The starred number is what the owner most wants to see.\n\n`;
+  const one=$('oneNum').value.trim();
+  out+=`## The one number (starred)\n${one||'[to confirm on the call]'}\n\n`;
+  const L=checkedIn('l',LEADS);if(L.length){out+=`## Leads\n`;L.forEach(x=>out+=`- ${x}\n`);out+=`\n`;}
+  const J=checkedIn('j',JOBS);if(J.length){out+=`## Jobs\n`;J.forEach(x=>out+=`- ${x}\n`);out+=`\n`;}
+  const M=checkedIn('m',MONEY);if(M.length||moneysrc.val){out+=`## Money${moneysrc.val?` (source: ${moneysrc.val})`:''}\n`;M.forEach(x=>out+=`- ${x}\n`);out+=`\n`;}
+  out+=`## Bottlenecks (always shown)\n- Stale estimates, unconfirmed appointments, unpaid invoices, unanswered reviews\n\n`;
+  out+=`## This week's one thing (always shown)\n- The single highest-value action, one sentence.\n\n`;
+  const floors=[];
+  if($('flLeads').value.trim())floors.push(`Fewer than ${$('flLeads').value.trim()} new leads`);
+  if($('flOwed').value.trim())floors.push(`Over $${$('flOwed').value.trim()} outstanding past 30 days`);
+  if($('flNoShow').value.trim())floors.push(`More than ${$('flNoShow').value.trim()} no-shows`);
+  if($('flOther').value.trim())floors.push($('flOther').value.trim());
+  if(floors.length){out+=`## Red-flag floors (warn at top if crossed)\n`;floors.forEach(f=>out+=`- ${f}\n`);out+=`\n`;}
+  const r=$('readers').value.trim();
+  out+=`## Readers\n- Owner${r?` + ${r}`:''}\n`;
+  return out.trimEnd()+'\n';
+}
+
+function buildMock(){
+  const biz=$('biz').value.trim()||'Your Business';
+  const L=checkedIn('l',LEADS),J=checkedIn('j',JOBS),M=checkedIn('m',MONEY);
+  let leadLine='11 new';const lp=[];
+  if(checked.l_calls)lp.push('6 calls');if(checked.l_texts)lp.push('3 recovered by text');if(checked.l_referrals)lp.push('2 referrals');if(checked.l_forms)lp.push('form fills');
+  if(lp.length)leadLine+=' ('+lp.slice(0,3).join(', ')+')';
+  let jobLine=[];if(checked.j_completed)jobLine.push('9 completed');if(checked.j_booked)jobLine.push('12 booked');if(checked.j_noshow)jobLine.push('1 no-show');
+  let moneyLine=[];if(checked.m_invoiced)moneyLine.push('$18,400 invoiced');if(checked.m_collected)moneyLine.push('$15,100 collected');if(checked.m_outstanding)moneyLine.push('$4,850 past 30 days');
+  let warn='';
+  if($('flOwed').value.trim()&&4850>Number($('flOwed').value.trim()))warn='⚠ $4,850 past 30 days is over your line';
+  let html=`<div class="subj">Subject: ${biz} weekly · Mar 2-8${checked.m_invoiced?' · $18.4K invoiced':''}</div>`;
+  if(L.length)html+=`<div class="sec"><span class="k">Leads</span> ${leadLine}</div>`;
+  if(jobLine.length)html+=`<div class="sec"><span class="k">Jobs</span> ${jobLine.join(', ')}</div>`;
+  if(moneyLine.length)html+=`<div class="sec"><span class="k">Money</span> ${moneyLine.join(' / ')}</div>`;
+  if(warn)html+=`<div class="warn">${warn}</div>`;
+  html+=`<div class="sec"><span class="k">Bottlenecks</span> 3 estimates over $2K sat 5+ days, no reply</div>`;
+  html+=`<div class="sec one">This week's one thing: Call those 3 estimates. That's $9,700 in maybe.</div>`;
+  html+=`<div class="foot">Flagged and maintained by [Your Company]. Reply with anything that looks off.</div>`;
+  if(!L.length&&!jobLine.length&&!moneyLine.length)html=`<div style="color:var(--gray-500);font-style:italic">Check some numbers on the left and your report shows up here.</div>`;
+  return html;
+}
+
+function render(){$('preview').textContent=buildMd();$('mock').innerHTML=buildMock();}
+
+function copyText(text,btn){
+  const orig=btn.textContent;
+  const ok=()=>{btn.textContent='Copied ✓';btn.classList.add('copied');setTimeout(()=>{btn.textContent=orig;btn.classList.remove('copied')},1500)};
+  const legacy=()=>{const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();let done=false;try{done=document.execCommand('copy')}catch(e){}document.body.removeChild(ta);if(done){ok()}else{btn.textContent='Press Cmd+C';setTimeout(()=>btn.textContent=orig,2000)}};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(ok).catch(legacy)}else{legacy()}
+}
+
+['biz','oneNum','flLeads','flOwed','flNoShow','flOther','readers'].forEach(id=>$(id).oninput=render);
+$('copyBtn').onclick=e=>copyText(buildMd(),e.target);
+$('dlBtn').onclick=()=>{const blob=new Blob([buildMd()],{type:'text/markdown'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='report-spec.md';a.click()};
+renderChecks();render();
+</script>
+</body>
+</html>

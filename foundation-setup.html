@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Get Set Up</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --orange:#E8541A;--orange-light:#FFF3EE;--orange-mid:#F97440;
+  --black:#111;--gray-700:#3d3d3d;--gray-500:#717171;--gray-300:#d4d4d4;--gray-100:#f5f5f5;--gray-50:#fafafa;--white:#fff;
+  --green:#16a34a;--green-bg:#dcfce7;--red:#dc2626;--red-bg:#fee2e2;--blue:#2563eb;--blue-bg:#eff6ff;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--gray-50);color:var(--black);font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;line-height:1.6}
+header{background:var(--white);border-bottom:1px solid var(--gray-300);padding:22px 24px}
+.head-inner{max-width:1160px;margin:0 auto}
+.eyebrow{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--orange);margin-bottom:6px}
+h1{font-size:clamp(24px,3.5vw,32px);font-weight:800;letter-spacing:-.02em;line-height:1.15}
+.sub{font-size:15px;color:var(--gray-500);margin-top:6px;max-width:660px}
+.layout{max-width:1160px;margin:0 auto;padding:24px;display:grid;grid-template-columns:1fr 400px;gap:24px;align-items:start}
+.panel{background:var(--white);border:1.5px solid var(--gray-300);border-radius:14px;padding:22px 24px;margin-bottom:16px}
+.panel h2{font-size:18px;font-weight:800;letter-spacing:-.02em;margin-bottom:4px}
+.panel .hint{font-size:13px;color:var(--gray-500);margin-bottom:14px}
+label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--gray-500);margin-bottom:4px}
+input,textarea{width:100%;font-family:inherit;font-size:14px;padding:9px 12px;border:1.5px solid var(--gray-300);border-radius:8px;background:var(--gray-50);color:var(--black)}
+input:focus,textarea:focus{outline:none;border-color:var(--orange);background:var(--white)}
+textarea{resize:vertical;min-height:56px;line-height:1.5}
+.field{margin-bottom:12px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px}
+.pill{font-family:inherit;font-size:12.5px;font-weight:600;padding:6px 13px;border-radius:100px;border:1.5px solid var(--gray-300);background:var(--white);color:var(--gray-700);cursor:pointer;transition:all .12s}
+.pill:hover{border-color:var(--gray-500)}
+.pill.on{background:var(--orange);border-color:var(--orange);color:var(--white)}
+.btn{font-family:inherit;font-weight:700;font-size:13px;padding:9px 16px;border-radius:8px;cursor:pointer;border:1.5px solid var(--gray-300);background:var(--white);color:var(--gray-700);transition:all .12s}
+.btn:hover{border-color:var(--gray-500)}
+.btn.orange{background:var(--orange);border-color:var(--orange);color:var(--white)}
+.btn.orange:hover{background:var(--orange-mid)}
+.btn.copied{background:var(--green);border-color:var(--green);color:var(--white)}
+.btn.big{font-size:15px;padding:13px 22px;width:100%}
+.buildwarn{font-size:13px;color:var(--red);font-weight:600;margin-top:8px;display:none}
+.preview-wrap{position:sticky;top:24px}
+.preview{background:#16181d;color:#e8e8e8;border-radius:12px;padding:18px;font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:12px;line-height:1.6;white-space:pre-wrap;word-break:break-word;max-height:36vh;overflow-y:auto}
+.wins{background:var(--orange-light);border:1.5px solid rgba(232,84,26,.25);border-radius:12px;padding:16px 18px;margin-top:14px}
+.wins h3{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--orange);margin-bottom:10px}
+.win{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--gray-700);margin-bottom:9px;line-height:1.5}
+.win .num{flex:none;width:20px;height:20px;border-radius:50%;background:var(--orange);color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.wins .foot{font-size:12.5px;font-weight:700;color:var(--orange);margin-top:6px}
+.wins .empty{font-size:13px;color:var(--gray-500);font-style:italic}
+.pv-actions{display:flex;gap:8px;margin-top:12px}
+.pv-actions .btn{flex:1}
+.done-note{font-size:12px;color:var(--gray-500);margin-top:10px;line-height:1.5}
+/* ---- Phase 2: the plan ---- */
+#plan{display:none}
+#plan.show{display:block}
+.plan-head{margin:26px 0 4px}
+.plan-head h2{font-size:22px;font-weight:800;letter-spacing:-.02em}
+.plan-head .hint{font-size:14px;color:var(--gray-500);margin-bottom:8px}
+.progress{font-size:12.5px;font-weight:700;color:var(--orange);margin-bottom:12px}
+.section-label{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--gray-500);margin:24px 0 12px;display:flex;align-items:center;gap:10px}
+.section-label:first-child{margin-top:6px}
+.section-label .tag{font-size:11px;font-weight:700;color:var(--orange);background:var(--orange-light);border:1px solid rgba(232,84,26,.25);padding:3px 9px;border-radius:100px;text-transform:none;letter-spacing:0}
+.task{background:var(--white);border:1.5px solid var(--gray-300);border-radius:14px;padding:18px 20px;margin-bottom:14px}
+.task.done{background:var(--gray-50)}
+.task .thead{display:flex;gap:12px;align-items:flex-start;cursor:pointer}
+.chk{flex:none;width:22px;height:22px;border-radius:6px;border:2px solid var(--gray-300);background:var(--white);margin-top:2px;display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff;font-weight:800;transition:all .12s}
+.task.done .chk{background:var(--green);border-color:var(--green)}
+.task h3{font-size:15.5px;font-weight:800;letter-spacing:-.01em}
+.task.done h3{color:var(--gray-500);text-decoration:line-through}
+.task .tmin{font-size:11.5px;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:.05em;margin-left:auto;flex:none;padding-top:3px}
+.task .tbody{font-size:13.5px;color:var(--gray-700);margin-top:8px;padding-left:34px;line-height:1.55}
+.task .tbody ol,.task .tbody ul{padding-left:18px;margin:6px 0}
+.task .tbody li{margin-bottom:4px}
+.task .tbody b{color:var(--black)}
+/* the "we do this together" card: no checkbox, lighter */
+.tog{background:var(--gray-50);border:1.5px dashed var(--gray-300);border-radius:12px;padding:14px 18px;margin-bottom:10px;display:flex;gap:12px;align-items:flex-start}
+.tog .dot{flex:none;width:22px;height:22px;border-radius:50%;background:var(--white);border:2px solid var(--orange);color:var(--orange);font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.tog h4{font-size:14.5px;font-weight:800;letter-spacing:-.01em;margin-bottom:2px}
+.tog p{font-size:13px;color:var(--gray-500);line-height:1.5}
+.prompt{position:relative;background:#16181d;color:#e8e8e8;border-radius:10px;padding:14px;margin:10px 0;font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:11.5px;line-height:1.55;white-space:pre-wrap;word-break:break-word}
+.prompt .cpy{position:absolute;top:8px;right:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;font-weight:700;padding:4px 10px;border-radius:6px;border:1px solid #3a3d45;background:#22252c;color:#e8e8e8;cursor:pointer}
+.prompt .cpy:hover{border-color:#5a5d65}
+.prompt .cpy.copied{background:var(--green);border-color:var(--green)}
+.note{background:var(--blue-bg);border:1.5px solid rgba(37,99,235,.25);border-radius:10px;padding:10px 14px;font-size:13px;color:var(--gray-700);margin:10px 0}
+.warncard{background:var(--red-bg);border:1.5px solid rgba(220,38,38,.25);border-radius:10px;padding:10px 14px;font-size:13px;color:var(--gray-700);margin:10px 0}
+.pastebox{margin-top:10px}
+.sent{color:var(--green);font-weight:700;font-size:12.5px;margin-left:8px}
+.dropzone{border:2px dashed var(--gray-300);border-radius:10px;padding:14px;text-align:center;font-size:13px;color:var(--gray-500);cursor:pointer;margin-top:10px;transition:all .12s}
+.dropzone:hover,.dropzone.drag{border-color:var(--orange);background:var(--orange-light);color:var(--gray-700)}
+.filelist{margin-top:8px}
+.filerow{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--gray-700);background:var(--gray-50);border:1px solid var(--gray-300);border-radius:7px;padding:5px 10px;margin-bottom:5px}
+.filerow .fname{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.filerow .fsize{color:var(--gray-500);flex:none}
+.filerow .fx{flex:none;margin-left:auto;cursor:pointer;color:var(--red);font-weight:800;border:none;background:none;font-size:14px;font-family:inherit}
+.orline{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-500);text-align:center;margin:8px 0 2px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.preview-wrap{position:static}.preview{max-height:300px}}
+</style>
+</head>
+<body>
+<header><div class="head-inner">
+  <div class="eyebrow" id="hdEyebrow">Get set up · about 40 minutes, in small pieces</div>
+  <h1 id="hdTitle">Get Set Up</h1>
+  <p class="sub" id="hdSub">Answer a few questions and this page builds your personal setup path: the right account, the right settings, and copy-paste steps written for you. No AI experience needed, that's the point. This part feels small, but it's the foundation everything you build later compounds on. Do it in one sitting or three, your progress saves.</p>
+</div></header>
+
+<div class="layout">
+  <div>
+    <div class="panel">
+      <h2>You and your business</h2>
+      <div class="hint">The basics. Rough is fine on the numbers.</div>
+      <div class="field"><label>Your name</label><input id="owner" placeholder="Ryan"></div>
+      <div class="field"><label>Business or company</label><input id="biz" placeholder="Summit Brokers"></div>
+      <div class="field"><label>What you do</label><input id="trade" placeholder="Business brokerage"></div>
+      <div class="field"><label>Which fits best?</label>
+        <div class="pills" data-pillgroup="role">
+          <button class="pill" data-val="I own the business">I own the business</button>
+          <button class="pill" data-val="I work at a company">I work at a company</button>
+          <button class="pill" data-val="Solo / freelance">Solo / freelance</button>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Service area (optional)</label><input id="area" placeholder="Salt Lake valley"></div>
+        <div class="field"><label>Team size (optional)</label><input id="team" placeholder="4"></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Your accounts</h2>
+      <div class="hint">This one question decides your whole setup path, so answer it carefully.</div>
+      <div class="field"><label>The email you work out of</label><div class="pills" data-pillgroup="email">
+        <button class="pill" data-val="Gmail">Gmail (@gmail.com)</button>
+        <button class="pill" data-val="Google Workspace">Company email on Google</button>
+        <button class="pill" data-val="Outlook or Microsoft 365">Outlook / Microsoft 365</button>
+        <button class="pill" data-val="Other">Other</button>
+      </div></div>
+      <div class="field"><label>Who controls the settings on that account?</label><div class="pills" data-pillgroup="emailadmin">
+        <button class="pill" data-val="Just me">Just me</button>
+        <button class="pill" data-val="An IT person or admin">An IT person or admin</button>
+        <button class="pill" data-val="Someone else">Someone else</button>
+        <button class="pill" data-val="Not sure">Not sure</button>
+      </div>
+      <div class="hint" style="margin:4px 0 0">If your email ends in your company's name and you didn't set it up yourself, someone else probably controls it.</div></div>
+      <div class="field"><label>Do you also have a personal Gmail?</label><div class="pills" data-pillgroup="personalgmail">
+        <button class="pill" data-val="Yes">Yes</button>
+        <button class="pill" data-val="No">No</button>
+      </div></div>
+    </div>
+
+    <div class="panel">
+      <h2>Your computer and Claude</h2>
+      <div class="field"><label>What are you on?</label><div class="pills" data-pillgroup="computer">
+        <button class="pill" data-val="Mac">Mac</button>
+        <button class="pill" data-val="Windows">Windows</button>
+      </div></div>
+      <div class="field"><label>Do you have Claude today?</label><div class="pills" data-pillgroup="plan">
+        <button class="pill" data-val="No account yet">No account yet</button>
+        <button class="pill" data-val="Free">Free account</button>
+        <button class="pill" data-val="Pro">Pro</button>
+        <button class="pill" data-val="Max">Max</button>
+        <button class="pill" data-val="Not sure">Not sure</button>
+      </div></div>
+    </div>
+
+    <div class="panel">
+      <h2>Your day</h2>
+      <div class="field"><label>Meetings on a calendar?</label><div class="pills" data-pillgroup="meetings">
+        <button class="pill" data-val="Most days">Most days</button>
+        <button class="pill" data-val="Sometimes">Sometimes</button>
+        <button class="pill" data-val="Rarely">Rarely</button>
+      </div></div>
+      <div class="field"><label>Do you use a meeting notes tool?</label><div class="pills" data-pillgroup="recorder">
+        <button class="pill" data-val="Granola">Granola</button>
+        <button class="pill" data-val="Otter, Fireflies, or another">Otter / Fireflies / other</button>
+        <button class="pill" data-val="None">Nope</button>
+      </div></div>
+      <div class="field"><label>When do you actually read email?</label><div class="pills" data-pillgroup="readtime">
+        <button class="pill" data-val="Early morning (before 8am)">Early morning</button>
+        <button class="pill" data-val="Mid-morning">Mid-morning</button>
+        <button class="pill" data-val="Lunch">Lunch</button>
+        <button class="pill" data-val="Evening">Evening</button>
+        <button class="pill" data-val="Constantly, all day">Constantly, all day</button>
+      </div><div class="hint" style="margin:4px 0 0">Your daily summary will land right before this.</div></div>
+    </div>
+
+    <div class="panel">
+      <h2>Who you write to, and how</h2>
+      <div class="field"><label>Who do you write to most? Tap all that apply.</label><div class="pills" data-pillgroup="groups" data-multi>
+        <button class="pill" data-val="clients and customers">Clients / customers</button>
+        <button class="pill" data-val="buyers">Buyers</button>
+        <button class="pill" data-val="sellers">Sellers</button>
+        <button class="pill" data-val="prospects">Prospects</button>
+        <button class="pill" data-val="my team">My team</button>
+        <button class="pill" data-val="suppliers and vendors">Suppliers / vendors</button>
+        <button class="pill" data-val="partners">Partners</button>
+        <button class="pill" data-val="referral sources">Referral sources</button>
+        <button class="pill" data-val="attorneys and lenders">Attorneys / lenders</button>
+        <button class="pill" data-val="patients">Patients</button>
+        <button class="pill" data-val="tenants">Tenants</button>
+      </div></div>
+      <div class="field"><label>Anyone else? (comma-separated)</label><input id="groupsother" placeholder="insurance adjusters, property managers"></div>
+      <div class="field"><label>How do you talk to people?</label><div class="pills" data-pillgroup="style">
+        <button class="pill" data-val="Casual and friendly">Casual and friendly</button>
+        <button class="pill" data-val="Direct and to the point">Direct and to the point</button>
+        <button class="pill" data-val="Warm but professional">Warm but professional</button>
+        <button class="pill" data-val="Formal">Formal</button>
+      </div></div>
+    </div>
+
+    <div class="panel">
+      <h2>What you already use</h2>
+      <div class="hint">Tap the ones you use. We build on your tools, we don't make you switch.</div>
+      <div class="field"><label>Calendar / scheduling</label><div class="pills" data-pillgroup="calendar">
+        <button class="pill" data-val="Google Calendar">Google Calendar</button>
+        <button class="pill" data-val="Outlook">Outlook</button>
+        <button class="pill" data-val="Paper or whiteboard">Paper or whiteboard</button>
+        <button class="pill" data-val="Jobber">Jobber</button>
+        <button class="pill" data-val="Housecall Pro">Housecall Pro</button>
+        <button class="pill" data-val="ServiceTitan">ServiceTitan</button>
+        <button class="pill" data-val="Other">Other</button>
+      </div></div>
+      <div class="field"><label>Phone</label><div class="pills" data-pillgroup="phone">
+        <button class="pill" data-val="Cell">Cell</button>
+        <button class="pill" data-val="Landline">Landline</button>
+        <button class="pill" data-val="OpenPhone">OpenPhone</button>
+        <button class="pill" data-val="RingCentral">RingCentral</button>
+        <button class="pill" data-val="Other">Other</button>
+      </div></div>
+      <div class="field"><label>How you price / quote</label><div class="pills" data-pillgroup="quoting">
+        <button class="pill" data-val="Spreadsheet">Spreadsheet</button>
+        <button class="pill" data-val="Laminated card">Laminated card</button>
+        <button class="pill" data-val="In my head">In my head</button>
+        <button class="pill" data-val="Jobber">Jobber</button>
+        <button class="pill" data-val="Housecall Pro">Housecall Pro</button>
+        <button class="pill" data-val="None yet">None yet</button>
+      </div></div>
+      <div class="field"><label>CRM or deal tracking (if any)</label><div class="pills" data-pillgroup="crm">
+        <button class="pill" data-val="None">None</button>
+        <button class="pill" data-val="A spreadsheet">A spreadsheet</button>
+        <button class="pill" data-val="HubSpot">HubSpot</button>
+        <button class="pill" data-val="GoHighLevel">GoHighLevel</button>
+        <button class="pill" data-val="Other">Other</button>
+      </div></div>
+    </div>
+
+    <div class="panel">
+      <h2>Where you look every day</h2>
+      <div class="hint">Be honest: where would a daily summary actually get read? Everything we build reports to this one place.</div>
+      <div class="field"><div class="pills" data-pillgroup="surface">
+        <button class="pill" data-val="email">My email</button>
+        <button class="pill" data-val="slack">Slack</button>
+        <button class="pill" data-val="notion">Notion</button>
+        <button class="pill" data-val="dashboard">A dashboard you build me</button>
+      </div></div>
+      <div class="field"><label>What's an hour of your time worth? (optional)</label><input id="value" placeholder="75"><div class="hint" style="margin:4px 0 0">Rough is fine. We use this later to show you the math.</div></div>
+    </div>
+
+    <div class="panel">
+      <h2>Content</h2>
+      <div class="hint">Do you put anything out into the world? Tap all that apply. If yes, we can teach the AI your public voice too.</div>
+      <div class="field"><div class="pills" data-pillgroup="content" data-multi>
+        <button class="pill" data-val="LinkedIn">LinkedIn</button>
+        <button class="pill" data-val="Podcast">Podcast</button>
+        <button class="pill" data-val="YouTube">YouTube</button>
+        <button class="pill" data-val="Newsletter">Newsletter</button>
+        <button class="pill" data-val="Instagram">Instagram</button>
+        <button class="pill" data-val="TikTok">TikTok</button>
+        <button class="pill" data-val="X (Twitter)">X (Twitter)</button>
+        <button class="pill" data-val="Facebook">Facebook</button>
+        <button class="pill" data-val="Blog">Blog</button>
+      </div></div>
+    </div>
+
+    <div class="panel">
+      <h2>Your week</h2>
+      <div class="hint">First: the 3 tasks you do most, every single week. Then: the 3 that hurt the most. They're often different, and we want both. One sentence each.</div>
+      <div class="field"><label>Most frequent task #1</label><textarea id="f1" placeholder="Answering the same buyer questions by email"></textarea></div>
+      <div class="field"><label>Most frequent task #2</label><textarea id="f2" placeholder="Writing follow-ups after every call"></textarea></div>
+      <div class="field"><label>Most frequent task #3</label><textarea id="f3" placeholder="Scheduling and rescheduling"></textarea></div>
+      <div class="field"><label>Biggest headache #1</label><textarea id="b1" placeholder="Quotes at 9pm at the kitchen table"></textarea></div>
+      <div class="field"><label>Biggest headache #2</label><textarea id="b2" placeholder="Missing calls when I'm on a job"></textarea></div>
+      <div class="field"><label>Biggest headache #3</label><textarea id="b3" placeholder="Never knowing where every deal stands"></textarea></div>
+    </div>
+
+    <div class="panel">
+      <h2>The rules</h2>
+      <div class="hint">So we don't step on anything.</div>
+      <div class="field"><label>Anything off-limits we should never touch?</label><textarea id="offlimits" placeholder="Don't email my biggest customer without me. Leave commercial pricing alone."></textarea></div>
+      <div class="field"><label>People the AI should never draft replies to</label><textarea id="neverdraft" placeholder="My attorney. Anyone I'm mid-negotiation with. My sister."></textarea></div>
+      <div class="field"><label>What must reach you same-day, no matter what?</label><textarea id="sameday" placeholder="Complaints. Anything about the Hendricks deal. Anything over $10k."></textarea></div>
+      <div class="field"><label>Who else touches your email, calendar, or accounts?</label><input id="access" placeholder="My wife handles the books"></div>
+      <div class="field"><label>When's your busy season? (optional)</label><input id="season" placeholder="May through September"></div>
+    </div>
+
+    <div class="panel">
+      <h2>Templates</h2>
+      <div class="hint">Do you have saved replies, templates, or things you copy-paste into emails?</div>
+      <div class="field"><div class="pills" data-pillgroup="templates">
+        <button class="pill" data-val="Yes">Yes, I use templates</button>
+        <button class="pill" data-val="A few">A few, here and there</button>
+        <button class="pill" data-val="No">Not really</button>
+      </div></div>
+    </div>
+
+    <div class="panel" style="border-color:var(--orange)">
+      <h2>Build your setup path</h2>
+      <div class="hint">Turns your answers into a checkable, step-by-step path with copy-paste prompts written for you.</div>
+      <button class="btn orange big" id="buildBtn">Build my setup path →</button>
+      <div class="buildwarn" id="buildWarn"></div>
+    </div>
+
+    <div id="plan"></div>
+  </div>
+
+  <div class="preview-wrap">
+    <div class="preview" id="preview"></div>
+    <div class="wins" id="winsBox">
+      <h3>Your quickest wins</h3>
+      <div id="winsList"></div>
+    </div>
+    <div class="pv-actions">
+      <button class="btn orange" id="copyBtn">Copy my answers</button>
+      <button class="btn" id="dlBtn">Download</button>
+    </div>
+    <div class="done-note">Your answers save in this browser automatically, so you can leave and come back. When you build your path, everything goes to Jay automatically too, so your session starts from a full tank.</div>
+  </div>
+</div>
+
+<script>
+/* One intake webapp (intake-webapp.gs). One row per client. */
+const INTAKE_ENDPOINT = "https://script.google.com/macros/s/AKfycbxtb_wO4jWBh5B9Gp-B7Uyvng6wIHW7JkYgRRAZUaMgRirRpj602XWV8pXPNb22-bPc/exec";
+
+const $=id=>document.getElementById(id);
+const FIELDS=['owner','biz','trade','area','team','value','groupsother','f1','f2','f3','b1','b2','b3','offlimits','neverdraft','sameday','access','season'];
+const picks={role:'',email:'',emailadmin:'',personalgmail:'',computer:'',plan:'',meetings:'',recorder:'',readtime:'',style:'',calendar:'',phone:'',quoting:'',crm:'',surface:'',templates:''};
+const multi={groups:[],content:[]};
+let checks={};                 // core task-id -> true
+let pastebacks={voice:'',xray:''};
+let files=[];                  // {name,type,size,b64} — session only, not persisted
+let planBuilt=false;
+const MAX_FILE=5*1024*1024;
+
+/* ---------- pills (single + multi) ---------- */
+document.querySelectorAll('[data-pillgroup]').forEach(group=>{
+  const name=group.dataset.pillgroup, isMulti=group.hasAttribute('data-multi');
+  group.querySelectorAll('.pill').forEach(p=>{
+    p.onclick=()=>{
+      if(isMulti){
+        p.classList.toggle('on');
+        multi[name]=[...group.querySelectorAll('.pill.on')].map(x=>x.dataset.val);
+      }else{
+        const was=p.classList.contains('on');
+        group.querySelectorAll('.pill').forEach(x=>x.classList.remove('on'));
+        if(!was){p.classList.add('on');picks[name]=p.dataset.val}else{picks[name]=''}
+      }
+      render();
+    };
+  });
+});
+
+/* ---------- helpers ---------- */
+function val(id){return $(id).value.trim()}
+function allGroups(){
+  const extra=val('groupsother')?val('groupsother').split(',').map(s=>s.trim()).filter(Boolean):[];
+  return [...multi.groups,...extra];
+}
+function weekItems(){return ['f1','f2','f3','b1','b2','b3'].map(val).filter(Boolean)}
+function isGooglePath(){return picks.email==='Gmail'||picks.email==='Google Workspace'}
+function isMsPath(){return picks.email==='Outlook or Microsoft 365'}
+function adminManaged(){return picks.emailadmin&&picks.emailadmin!=='Just me'}
+function usePersonal(){return adminManaged()&&picks.email!=='Gmail'&&picks.personalgmail==='Yes'}
+
+/* ---------- quick-wins engine (recipe matches, right rail) ---------- */
+const WINMAP=[
+  {kw:['email','inbox','reply','respond','message','same question','follow-up','follow up','followup'],win:'Inbox triage: your email sorted and replies drafted in your voice, around the clock'},
+  {kw:['call','phone','miss','voicemail','ring'],win:'Missed-call text-back: every missed call gets an instant text with your booking link'},
+  {kw:['quote','bid','estimate','pricing','price'],win:'Quote drafting: send a photo and a voice note, get a draft estimate back in an hour'},
+  {kw:['schedule','booking','book','calendar','no-show','no show','remind','confirm','reschedul'],win:'Scheduling and reminders: bookings confirm and remind themselves, no-shows drop'},
+  {kw:['review','reputation','rating','star'],win:'Reviews: every finished job asks for a review, and new reviews get a reply drafted for you'},
+  {kw:['deal','pipeline','nda','stage','where things stand','status','loi','listing'],win:'The daily dashboard: every deal, its stage, what\'s stalled, and the next move, on one page'},
+  {kw:['meeting','notes','recap','transcript'],win:'Meeting follow-up: every call gets a recap email, next steps, and notes filed automatically'},
+  {kw:['report','number','money','track','invoice','pay','collect','chase','owe','bookkeep'],win:'The Monday report: leads, jobs, money, and what\'s stuck, in one email every Monday'}
+];
+function matchWin(text){
+  const t=text.toLowerCase();
+  for(const m of WINMAP){if(m.kw.some(k=>t.includes(k)))return m.win}
+  return null;
+}
+function winList(){
+  const seen=new Set(),out=[];
+  weekItems().forEach(t=>{const w=matchWin(t);if(w&&!seen.has(w)){seen.add(w);out.push(w)}});
+  return out;
+}
+
+/* ---------- the one combined doc (right rail + intake) ---------- */
+function buildMd(){
+  const biz=val('biz')||'[Business]', owner=val('owner')||'[Name]';
+  let l1=[val('trade'),val('area')].filter(Boolean).join(', ');
+  let out=`# ${biz}: client profile + context\n`;
+  if(l1)out+=`> ${l1}.${val('team')?' '+val('team')+' people.':''}\n`;
+  out+=`> Self-served via the setup quiz. This is the full intake. Read first.\n\n`;
+  // owner
+  const ob=[['Name',owner!=='[Name]'?owner:''],['Role',picks.role],['Communicates',picks.style],['Hourly value',val('value')?'$'+val('value'):''],['Reads email',picks.readtime],['Computer',picks.computer],['Claude plan today',picks.plan]].filter(x=>x[1]);
+  if(ob.length){out+=`## The owner\n`;ob.forEach(([k,v])=>out+=`- ${k}: ${v}\n`);out+=`\n`;}
+  // accounts
+  const acct=[['Work email',picks.email],['Account controlled by',picks.emailadmin],['Has personal Gmail',picks.personalgmail]].filter(x=>x[1]);
+  if(acct.length){
+    out+=`## Accounts\n`;acct.forEach(([k,v])=>out+=`- ${k}: ${v}\n`);
+    if(usePersonal())out+=`- PATH: build on personal Gmail, admin heads-up sent for the work account\n`;
+    else if(adminManaged())out+=`- PATH: admin-managed account, connector test needed before session\n`;
+    out+=`\n`;
+  }
+  // day
+  const day=[['Meetings',picks.meetings],['Notes tool',picks.recorder]].filter(x=>x[1]);
+  if(day.length){out+=`## Day\n`;day.forEach(([k,v])=>out+=`- ${k}: ${v}\n`);out+=`\n`;}
+  // audiences
+  const gr=allGroups();
+  if(gr.length){out+=`## Audiences (voice segments)\n`;gr.forEach(g=>out+=`- ${g}\n`);out+=`\n`;}
+  // stack
+  const stack=[['Calendar',picks.calendar],['Phone',picks.phone],['Quoting',picks.quoting],['CRM / deal tracking',picks.crm]].filter(x=>x[1]);
+  if(stack.length){out+=`## Stack\n`;stack.forEach(([k,v])=>out+=`- ${k}: ${v}\n`);out+=`\n`;}
+  if(picks.surface)out+=`## Delivery surface\n- delivery_surface: ${picks.surface}\n\n`;
+  if(multi.content.length)out+=`## Content platforms\n- ${multi.content.join(', ')}\n\n`;
+  // week
+  const fs=['f1','f2','f3'].map(val).filter(Boolean), bs=['b1','b2','b3'].map(val).filter(Boolean);
+  if(fs.length||bs.length){
+    out+=`## The week\n`;
+    if(fs.length){out+=`### Most frequent tasks (their words)\n`;fs.forEach((b,i)=>out+=`${i+1}. ${b}\n`);}
+    if(bs.length){out+=`### Biggest headaches (their words)\n`;bs.forEach((b,i)=>out+=`${i+1}. ${b}\n`);}
+    out+=`\n`;
+  }
+  const wins=winList();
+  if(wins.length){out+=`## Quick wins (auto-matched)\n`;wins.forEach((w,i)=>out+=`${i+1}. ${w}\n`);out+=`\n`;}
+  // constraints
+  const off=val('offlimits'),nd=val('neverdraft'),sd=val('sameday'),acc=val('access'),sea=val('season');
+  if(off||nd||sd||acc||sea){
+    out+=`## Constraints\n`;
+    if(off)out+=`- Off-limits: ${off.replace(/\n/g,'; ')}\n`;
+    if(nd)out+=`- Never-draft list: ${nd.replace(/\n/g,'; ')}\n`;
+    if(sd)out+=`- Same-day musts: ${sd.replace(/\n/g,'; ')}\n`;
+    if(acc)out+=`- Others with access: ${acc}\n`;
+    if(sea)out+=`- Busy season: ${sea}\n`;
+    out+=`\n`;
+  }
+  if(picks.templates)out+=`## Templates\n- Has templates: ${picks.templates}\n\n`;
+  return out.trimEnd()+'\n';
+}
+
+/* ---------- seeded prompts ---------- */
+function testDrivePrompt(){
+  if(picks.meetings==='Most days'||picks.meetings==='Sometimes')
+    return `Brief me on my next meeting: who I'm meeting, our history from my email and calendar, and 3 talking points.`;
+  return `Look through my inbox from the last 2 weeks and list the 5 emails I most need to answer, oldest first, with a one-line suggested reply for each.`;
+}
+function voicePrompt(){
+  const g=allGroups(), owner=val('owner')||'My';
+  if(g.length>=2){
+    const counts=[25,25,20,20], letters=['A','B','C','D'];
+    let groups=g.slice(0,4).map((grp,i)=>`GROUP ${letters[i]} — ${grp.toUpperCase()}: replies I wrote to ${grp}. Pull my ${counts[i]} best.`).join('\n');
+    return `Search my sent mail from the last 12 months. Pull my best real replies,
+written by me personally (skip forwards and one-word answers), and sort
+them into these groups:
+
+${groups}
+
+For EACH group, give me:
+1. REGISTER NOTES: how my tone, formality, and length differ in this
+   group vs the others
+2. GREETINGS + SIGN-OFFS: what I actually use with this audience,
+   with real examples
+3. PHRASES: 8-10 expressions I use repeatedly with this audience,
+   verbatim
+4. THE 3 BEST FULL REPLIES: quoted in full, as calibration samples
+
+Then one closing section, ACROSS ALL GROUPS: sentence style, punctuation
+habits, and anything I do that a generic AI would never guess.
+
+Title it "${owner} Voice Mine — Segmented".`;
+  }
+  return `Search my sent mail from the last 12 months and pull my 40 best replies:
+real answers I wrote myself, not one-word confirmations or forwards.
+From those, build me a voice profile with these sections:
+
+1. GREETINGS: how I actually open emails, with real examples
+2. SIGN-OFFS: how I close, with real examples
+3. SENTENCE STYLE: typical length, punctuation habits, formality level
+4. PHRASES I USE: 10-15 expressions that show up repeatedly, verbatim
+5. PHRASES I'D NEVER USE: corporate or formal language absent from my
+   writing that a generic AI would wrongly use
+6. TONE NOTES: how I handle a complaint vs a price question vs a
+   scheduling request, with one real example of each
+
+Title it "${owner} Voice Profile v1".
+Quote real sentences from my emails as evidence throughout.`;
+}
+function xrayPrompt(){
+  const g=allGroups(), biz=val('biz')||'My business';
+  const cats=[...g.map(x=>`emails from ${x}`),'scheduling back-and-forth','questions I\'ve answered before','newsletters and junk','genuinely-needs-me messages'].join(',\n   ');
+  return `Analyze my inbox for the last 30 days and give me a one-page report:
+
+1. VOLUME: total emails received, total I actually replied to
+2. CATEGORIES: sort what I received into these buckets with counts and
+   percentages:
+   ${cats}
+3. REPEAT REPLIES: the 5 types of reply I send over and over, with one
+   real example of each
+4. RESPONSE LAG: my typical time-to-reply, and the 3 oldest emails
+   still sitting unanswered right now
+5. THE BOTTOM LINE: if the routine categories were drafted for me
+   automatically, estimate the hours per week that returns, showing
+   your math
+
+Title it "${biz} Inbox X-Ray" and keep it under a page.`;
+}
+function firstWinPrompts(){
+  const items=[];
+  const fs=['f1','f2','f3'].map(val).filter(Boolean);
+  if(fs[0])items.push({title:'Clear the first thing off your plate',prompt:`Here's something I do over and over: ${fs[0]}. Draft the next one for me in my voice, and ask me anything you need to get it right.`});
+  if(picks.meetings==='Most days'||picks.meetings==='Sometimes')items.push({title:'Never walk into a meeting cold',prompt:`Brief me on tomorrow's meetings: who each person is, our history from email and calendar, and 2 talking points each.`});
+  items.push({title:'One-page brief on anyone',prompt:`Research [company or person] and give me a one-page brief: what they do, anything recent worth knowing, and 3 smart questions to ask them.`});
+  return items.slice(0,3);
+}
+function itHeadsUpMsg(){
+  return `Quick heads-up: I'm setting up an AI assistant (Claude) on my accounts. The connector settings on my work account look admin-locked. Could you enable Claude (claude.ai) connector access for my account? No rush, I'm building on my personal account in the meantime. Happy to show you what it does.`;
+}
+
+/* ---------- plan ---------- */
+function promptBlock(text){
+  return `<div class="prompt"><button class="cpy" data-copyprompt>Copy</button>${text.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</div>`;
+}
+function taskCard(id,min,title,bodyHtml){
+  const done=checks[id]?' done':'';
+  return `<div class="task${done}" data-task="${id}">
+    <div class="thead" data-toggle><div class="chk">${checks[id]?'✓':''}</div><h3>${title}</h3><span class="tmin">${min}</span></div>
+    <div class="tbody">${bodyHtml}</div>
+  </div>`;
+}
+function togCard(n,title,desc){
+  return `<div class="tog"><div class="dot">${n}</div><div><h4>${title}</h4><p>${desc}</p></div></div>`;
+}
+function buildPlan(){
+  const owner=val('owner')||'there';
+  const isMac=picks.computer!=='Windows';
+  let core='';
+
+  // 1. account decision
+  if(adminManaged()){
+    let body=`<p>Your work account is managed by ${picks.emailadmin==='Not sure'?'someone (you\'re not sure who, which usually means IT)':(picks.emailadmin==='An IT person or admin'?'an admin':'someone else')}. Managed accounts often block the connections we need, and finding out mid-session kills an hour. So:</p>`;
+    if(usePersonal()||picks.personalgmail==='Yes'){
+      body+=`<ol><li><b>Build Claude on your personal Gmail.</b> It's yours, nothing is locked, and it works today. Your work email can join later once your admin opens the door.</li>
+      <li>Send your admin this heads-up now (it takes them 2 minutes and unlocks your work account for later):</li></ol>${promptBlock(itHeadsUpMsg())}`;
+    }else{
+      body+=`<ol><li>Do a 30-second test on your work account: sign in at <b>claude.ai</b> → Settings → Connectors. If connecting Google is grayed out or says "disabled by your admin," it's locked.</li>
+      <li>If it's locked, send your admin this message, and tell Jay, so the session plan adjusts:</li></ol>${promptBlock(itHeadsUpMsg())}
+      <div class="note">No personal Gmail? Making one just for your AI setup takes 3 minutes and works great: <b>gmail.com → Create account</b>.</div>`;
+    }
+    core+=taskCard('account','3 min','Pick the account Claude lives on (do this first)',body);
+  }else{
+    core+=taskCard('account','1 min','Pick the account Claude lives on',
+      `<p>You control your own account, so this is easy: <b>Claude lives on ${picks.email||'your main work email'}</b>. Everything below happens signed in as that account. One account, one brain, no confusion.</p>`);
+  }
+
+  // 2. plan
+  if(picks.plan==='Max'){
+    core+=taskCard('plan','1 min','Confirm your Claude plan',
+      `<p>You're on Max already. That's the right plan for this. Check the box and keep moving.</p>`);
+  }else if(picks.plan==='Pro'||picks.plan==='Free'){
+    core+=taskCard('plan','2 min','Upgrade your Claude plan',
+      `<ol><li>Go to <b>claude.ai → Settings → Billing</b> (signed into the account from step 1).</li>
+      <li>Upgrade to <b>Max</b>. It's what makes the always-working setup possible without hitting limits mid-task.</li>
+      <li>Your account, your card. Everything we build stays yours.</li></ol>`);
+  }else{
+    core+=taskCard('plan','3 min','Create your Claude account',
+      `<ol><li>Go to <b>claude.ai</b> and sign up with the account from step 1.</li>
+      <li>Pick the <b>Max</b> plan. It's what makes the always-working setup possible without hitting limits mid-task.</li>
+      <li>Your account, your card. Everything we build stays yours.</li></ol>`);
+  }
+
+  // 3. desktop app
+  core+=taskCard('desktop','3 min','Install the Claude app on your '+(picks.computer?(isMac?'Mac':'Windows PC'):'computer'),
+    `<ol><li>Go to <b>claude.ai/download</b> and grab the ${isMac?'Mac':'Windows'} app.</li>
+     <li>${isMac?'Open the download and drag Claude into Applications.':'Run the installer.'}</li>
+     <li>Sign in with your step-1 account.</li></ol>
+     <p>Why the app instead of the browser: it can look at files and screenshots with you.${isMac?' Handy one: press <b>Cmd+Shift+Ctrl+4</b>, drag over anything on screen, then paste straight into Claude. Screenshot to answer in five seconds.':''}</p>`);
+
+  // 4. connectors
+  if(isGooglePath()||usePersonal()){
+    let extra='';
+    if(picks.surface==='slack')extra=`<li>Also connect <b>Slack</b> (your daily summaries will land there).</li>`;
+    if(picks.surface==='notion')extra=`<li>Also connect <b>Notion</b> (your daily summaries will land there).</li>`;
+    core+=taskCard('connectors','3 min','Connect your email, calendar, and files',
+      `<ol><li>In Claude: <b>Settings → Connectors</b>.</li>
+       <li>Connect <b>Google Mail</b>, <b>Google Calendar</b>, and <b>Google Drive</b>.</li>
+       <li>Say yes to the permission screens. This is read access for your own AI, on your own account. Nothing gets sent without you.</li>${extra}</ol>`);
+  }else if(isMsPath()){
+    core+=taskCard('connectors','3 min','Connect your email and calendar',
+      `<div class="note"><b>You're on Microsoft</b>, so your plumbing is slightly different (same result). Jay sees this answer automatically and comes prepared.</div>
+       <ol><li>In Claude: <b>Settings → Connectors</b>.</li>
+       <li>Connect the Microsoft / Outlook connector if you see it. If you don't, skip this, you'll do it together at the session.</li></ol>`);
+  }else{
+    core+=taskCard('connectors','3 min','Connect your email',
+      `<div class="note">You picked "Other" for email. If you also have a Gmail you actually use, connect it now: <b>Settings → Connectors → Google Mail + Calendar</b>. Otherwise this happens together at your session.</div>`);
+  }
+
+  // 5. permissions
+  core+=taskCard('permissions','2 min','Set the dial: everything but send',
+    `<p>This is the setting that makes the whole thing safe to use:</p>
+     <ol><li>In <b>Settings → Connectors</b>, open the settings on each connected account.</li>
+     <li>Allow reading, labeling, and <b>creating drafts</b>.</li>
+     <li>Keep <b>"ask before sending"</b> ON. That's the deal: Claude drafts, you press send.</li></ol>
+     <div class="note">Nothing leaves your accounts without your finger on the button. That stays true for everything Jay builds you later, too.</div>`);
+
+  // 6. test drive
+  core+=taskCard('testdrive','2 min','Take it for a test drive',
+    `<p>New chat, paste this:</p>${promptBlock(testDrivePrompt())}
+     <p>If it comes back with your real ${(picks.meetings==='Most days'||picks.meetings==='Sometimes')?'calendar and email history':'inbox'}, your connections work. And you just met your new assistant.</p>`);
+
+  // 7. voice (ONCE)
+  const segd=allGroups().length>=2;
+  core+=taskCard('voice','10 min','Teach Claude how you write',
+    `<p>${segd?`Customized to YOUR audiences (${allGroups().slice(0,4).join(', ')}): it learns that you write to each one differently.`:'This builds your writing profile from your own sent mail.'} New chat, paste the whole block:</p>
+     ${promptBlock(voicePrompt())}
+     <p><b>Copy the full output.</b> You'll paste it in the box at the bottom of this page. This is what makes every draft sound like you instead of like a robot.</p>`);
+
+  // 8. inbox x-ray
+  core+=taskCard('xray','5 min','Count what your inbox actually costs',
+    `<p>New chat, paste this:</p>${promptBlock(xrayPrompt())}
+     <p><b>Copy the report</b> into the box at the bottom too. If any number surprises you, remember which one, that's usually where we start.</p>`);
+
+  // 9. IT heads-up (conditional, before session)
+  if(adminManaged()&&!usePersonal()){
+    core+=taskCard('itheadsup','2 min','Give your email admin a heads-up',
+      `<p>You said ${picks.emailadmin==='Not sure'?'you\'re not sure who':'someone else'} manages your email. Send them this today so an approval screen doesn't stall your session:</p>${promptBlock(itHeadsUpMsg())}
+       <div class="note">Admin approval screens are the #1 thing that eats an hour at setup sessions. One message now saves it.</div>`);
+  }
+
+  // 10. content export (conditional, long-lead)
+  if(multi.content.length){
+    let items='';
+    if(multi.content.includes('LinkedIn')){
+      items+=`<p><b>LinkedIn</b> (do this one today, it takes LinkedIn 24-72 hours to deliver):</p>
+      <ol><li>LinkedIn → <b>Settings &amp; Privacy → Data privacy → Get a copy of your data</b></li>
+      <li>Pick "Want something in particular?" → check <b>Shares</b> (your posts)</li>
+      <li>Submit. When the email arrives, forward it to Jay.</li></ol>`;
+    }
+    if(multi.content.includes('Podcast')||multi.content.includes('YouTube')){
+      items+=`<p><b>Podcast / YouTube:</b> jot down your feed or channel link and your 3 favorite episodes. Bring them to the session, your spoken voice is often the truest version of your voice.</p>`;
+    }
+    const others=multi.content.filter(c=>!['LinkedIn','Podcast','YouTube'].includes(c));
+    if(others.length)items+=`<p><b>${others.join(', ')}:</b> bring your handles or links. We'll pull what's useful at the session.</p>`;
+    core+=taskCard('content','5 min','Your content voice (long-lead, start today)',items);
+  }
+
+  // 11. optional head start
+  const fw=firstWinPrompts();
+  if(fw.length){
+    let body=`<p>Totally optional, but if you want to play before we meet, try one a day. Don't binge them:</p>`;
+    fw.forEach((w,i)=>{body+=`<p style="margin-top:10px"><b>${i+1}. ${w.title}</b></p>${promptBlock(w.prompt)}`});
+    body+=`<div class="note">Stuck on any step, anywhere? Ask Claude itself. Describe what you're seeing and it walks you through. That's the move 9 times out of 10.</div>`;
+    core+=taskCard('headstart','optional','Want a head start? (optional)',body);
+  }
+
+  // 12. send back
+  let submitBits='';
+  if(INTAKE_ENDPOINT){
+    submitBits=`<p>Get your two outputs to Jay, no email needed. Upload the files if you saved them, or just paste:</p>
+      <div class="dropzone" id="dropzone">Drop files here, or click to choose<br><span style="font-size:11.5px">Voice Profile, Inbox X-Ray, templates, anything useful · .md .txt .docx .pdf · 5MB each</span></div>
+      <input type="file" id="fileInput" multiple accept=".md,.txt,.doc,.docx,.pdf,.rtf,.csv" style="display:none">
+      <div class="filelist" id="fileList"></div>
+      <div class="orline">or paste</div>
+      <div class="pastebox"><label>Your Voice Profile output</label><textarea id="pbVoice" placeholder="Paste the whole thing"></textarea></div>
+      <div class="pastebox"><label>Your Inbox X-Ray output</label><textarea id="pbXray" placeholder="Paste the whole thing"></textarea></div>
+      <p style="margin-top:10px"><button class="btn orange" id="sendBtn">Send everything to Jay</button><span class="sent" id="sentMark"></span></p>
+      <p class="hint" style="margin:6px 0 0">Files send when you hit the button. If you leave this page, re-attach them before sending.</p>`;
+  }else{
+    submitBits=`<p>Email Jay your two outputs (the Voice Profile and the Inbox X-Ray), as saved files or pasted text, plus the <b>Download</b> file from the panel on the right.</p>`;
+  }
+  core+=taskCard('sendback','2 min','Send it back',
+    `${submitBits}`);
+
+  // ---- the "together" section (display only) ----
+  let tog='';
+  tog+=togCard(1,'Set your Claude profile','Claude interviews you for 10 minutes and writes the "what should Claude know about you" block. We do it live so it\'s dialed in on the first pass.');
+  tog+=togCard(2,'Your home folder + your starter skills','We drop a Claude folder on your Desktop and load the skills picked for your week, so you never fight with files alone.');
+  tog+=togCard(3,'Build your first skill by talking','You describe a task, Claude writes the skill, you upload it. The moment it clicks that you can build these yourself.');
+  if(picks.meetings!=='Rarely'&&picks.recorder!=='Otter, Fireflies, or another'){
+    tog+=togCard(4,'Wire in your meeting notes','We connect Granola so you can say "pull up my meeting with [name]" and Claude grabs the notes.');
+  }
+  if(picks.templates==='Yes'||picks.templates==='A few'){
+    tog+=togCard(5,'Round up your best templates','Bring the saved replies you copy-paste. We fold your real language straight into the system.');
+  }
+  tog+=togCard(6,'Your automation key + spend cap','We set up the one key your automations run on, with a hard monthly cap, in 5 minutes. You keep the card; we make sure it can never surprise you.');
+
+  const doneCt=Object.keys(checks).filter(k=>checks[k]).length;
+  const total=(core.match(/data-task=/g)||[]).length;
+  $('plan').innerHTML=`<div class="plan-head"><h2>${owner==='there'?'Your':owner+"'s"} setup path</h2>
+    <div class="hint">Built from your answers, in the order that works. Check things off as you go, progress saves in this browser. Change an answer above and the path updates.</div>
+    <div class="progress">${doneCt}/${total} done</div></div>
+    <div class="section-label">Before your first session <span class="tag">about 40 minutes, your part</span></div>${core}
+    <div class="section-label">What we'll do together, day one <span class="tag">nothing for you to do now</span></div>${tog}`;
+
+  // wire tasks
+  $('plan').querySelectorAll('[data-toggle]').forEach(h=>{
+    h.onclick=e=>{
+      if(e.target.closest('.cpy')||e.target.closest('button:not(.cpy)')||e.target.closest('textarea'))return;
+      const card=h.closest('.task'),id=card.dataset.task;
+      checks[id]=!checks[id];save();buildPlan();
+    };
+  });
+  $('plan').querySelectorAll('[data-copyprompt]').forEach(b=>{
+    b.onclick=e=>{e.stopPropagation();copyText(b.parentElement.textContent.replace(/^Copy/,'').trim(),b)};
+  });
+  if(INTAKE_ENDPOINT){
+    const pv=$('pbVoice'),px=$('pbXray');
+    if(pv){pv.value=pastebacks.voice||'';pv.oninput=()=>{pastebacks.voice=pv.value;save()}}
+    if(px){px.value=pastebacks.xray||'';px.oninput=()=>{pastebacks.xray=px.value;save()}}
+    const sb=$('sendBtn');
+    if(sb)sb.onclick=()=>{submitIntake(true)};
+    wireDropzone();
+  }
+}
+
+/* ---------- file uploads ---------- */
+function wireDropzone(){
+  const dz=$('dropzone'),fi=$('fileInput');
+  if(!dz||!fi)return;
+  dz.onclick=()=>fi.click();
+  dz.ondragover=e=>{e.preventDefault();dz.classList.add('drag')};
+  dz.ondragleave=()=>dz.classList.remove('drag');
+  dz.ondrop=e=>{e.preventDefault();dz.classList.remove('drag');addFiles(e.dataTransfer.files)};
+  fi.onchange=()=>{addFiles(fi.files);fi.value=''};
+  renderFileList();
+}
+function addFiles(list){
+  [...list].forEach(f=>{
+    if(f.size>MAX_FILE){alert(f.name+' is over 5MB, trim it or paste the text instead.');return;}
+    if(files.some(x=>x.name===f.name&&x.size===f.size))return;
+    const reader=new FileReader();
+    reader.onload=()=>{
+      files.push({name:f.name,type:f.type||'application/octet-stream',size:f.size,b64:String(reader.result).split(',')[1]||''});
+      renderFileList();
+    };
+    reader.readAsDataURL(f);
+  });
+}
+function fmtSize(b){return b>1048576?(b/1048576).toFixed(1)+' MB':Math.max(1,Math.round(b/1024))+' KB'}
+function renderFileList(){
+  const box=$('fileList');if(!box)return;
+  box.innerHTML=files.map((f,i)=>`<div class="filerow"><span class="fname">${f.name.replace(/</g,'&lt;')}</span><span class="fsize">${fmtSize(f.size)}</span><button class="fx" data-rmfile="${i}" title="Remove">×</button></div>`).join('');
+  box.querySelectorAll('[data-rmfile]').forEach(b=>b.onclick=e=>{e.stopPropagation();files.splice(+b.dataset.rmfile,1);renderFileList()});
+}
+
+/* ---------- wins box ---------- */
+function renderWins(){
+  const box=$('winsList');
+  const items=weekItems();
+  if(!items.length){box.innerHTML='<div class="empty">Fill in your week above and we\'ll show you where AI helps first.</div>';return;}
+  const wins=winList();let html='';let n=0;
+  wins.forEach(w=>{n++;html+=`<div class="win"><span class="num">${n}</span><span>${w}</span></div>`});
+  if(!n)html+=`<div class="win"><span class="num">1</span><span>We'll dig into these live at your session.</span></div>`;
+  html+='<div class="foot">We build the top one first.</div>';
+  box.innerHTML=html;
+}
+
+/* ---------- persistence ---------- */
+function save(){
+  const fields={};FIELDS.forEach(id=>fields[id]=$(id).value);
+  try{localStorage.setItem('intake-v1',JSON.stringify({fields,picks,multi,checks,pastebacks,planBuilt}))}catch(e){}
+}
+function load(){
+  let d;try{d=JSON.parse(localStorage.getItem('intake-v1'))}catch(e){}
+  if(!d)return;
+  if(d.fields)FIELDS.forEach(id=>{if(d.fields[id]!=null)$(id).value=d.fields[id]});
+  if(d.picks)Object.assign(picks,d.picks);
+  if(d.multi)Object.assign(multi,d.multi);
+  if(d.checks)checks=d.checks;
+  if(d.pastebacks)pastebacks=d.pastebacks;
+  planBuilt=!!d.planBuilt;
+  document.querySelectorAll('[data-pillgroup]').forEach(group=>{
+    const name=group.dataset.pillgroup, isMulti=group.hasAttribute('data-multi');
+    group.querySelectorAll('.pill').forEach(p=>{
+      const on=isMulti?(multi[name]||[]).includes(p.dataset.val):picks[name]===p.dataset.val;
+      p.classList.toggle('on',on);
+    });
+  });
+}
+
+/* ---------- submission (one row per client) ---------- */
+function clientId(){
+  let c=null;try{c=localStorage.getItem('intake-cid')}catch(e){}
+  if(!c){c='int-'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);try{localStorage.setItem('intake-cid',c)}catch(e){}}
+  return c;
+}
+let submitTimer=null;
+function submitIntake(manual){
+  if(!INTAKE_ENDPOINT)return;
+  const payload={ts:new Date().toISOString(),quiz:'intake',clientId:clientId(),answers:{fields:Object.fromEntries(FIELDS.map(id=>[id,$(id).value])),picks,multi},contextMd:buildMd(),homework:checks,pastebacks,files:manual?files:[]};
+  fetch(INTAKE_ENDPOINT,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload)})
+    .then(()=>{if(manual){const m=$('sentMark');if(m){m.textContent='Sent ✓';setTimeout(()=>m.textContent='',3000)}}})
+    .catch(()=>{if(manual){const m=$('sentMark');if(m)m.textContent='Couldn\'t send. Use Copy or Download instead.'}});
+}
+function queueSubmit(){
+  if(!INTAKE_ENDPOINT||!planBuilt)return;
+  clearTimeout(submitTimer);submitTimer=setTimeout(()=>submitIntake(false),4000);
+}
+
+/* ---------- render ---------- */
+function render(){
+  $('preview').textContent=buildMd();
+  renderWins();
+  if(planBuilt){$('plan').classList.add('show');buildPlan();}
+  save();queueSubmit();
+}
+
+function copyText(text,btn){
+  const orig=btn.textContent;
+  const ok=()=>{btn.textContent='Copied ✓';btn.classList.add('copied');setTimeout(()=>{btn.textContent=orig;btn.classList.remove('copied')},1500)};
+  const legacy=()=>{const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();let done=false;try{done=document.execCommand('copy')}catch(e){}document.body.removeChild(ta);if(done){ok()}else{btn.textContent='Press Cmd+C';setTimeout(()=>btn.textContent=orig,2000)}};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(ok).catch(legacy)}else{legacy()}
+}
+
+/* ---------- wire ---------- */
+FIELDS.forEach(id=>$(id).oninput=render);
+$('copyBtn').onclick=e=>copyText(buildMd(),e.target);
+$('dlBtn').onclick=()=>{const blob=new Blob([buildMd()],{type:'text/markdown'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='client-profile.md';a.click()};
+$('buildBtn').onclick=()=>{
+  const missing=[];
+  if(!val('owner'))missing.push('your name');
+  if(!picks.email)missing.push('your work email type');
+  if(!picks.emailadmin)missing.push('who controls that account');
+  const warn=$('buildWarn');
+  if(missing.length){warn.style.display='block';warn.textContent='Almost. Fill in '+missing.join(', ')+' first.';return;}
+  warn.style.display='none';
+  planBuilt=true;render();submitIntake(false);
+  document.querySelector('.plan-head').scrollIntoView({behavior:'smooth'});
+};
+
+load();
+
+/* ---------- link personalization: ?client=Ryan (optionally &biz=Summit%20Brokers) ---------- */
+(function(){
+  const q=new URLSearchParams(location.search);
+  const name=(q.get('client')||'').trim(), biz=(q.get('biz')||'').trim();
+  if(name){
+    const safe=name.replace(/[^\p{L}\p{N} .'-]/gu,'').slice(0,40);
+    if(safe){
+      document.title=safe+"'s Setup";
+      $('hdTitle').textContent="Get Set Up, "+safe;
+      $('hdEyebrow').textContent='Made for '+safe+' · about 40 minutes, in small pieces';
+      $('hdSub').textContent='Hey '+safe+', answer a few questions and this page builds your personal setup path: the right account, the right settings, and copy-paste steps written for you. No AI experience needed. This part feels small, but it is the foundation everything you build later compounds on. Do it in one sitting or three, your progress saves.';
+      if(!$('owner').value)$('owner').value=safe;
+    }
+  }
+  if(biz&&!$('biz').value)$('biz').value=biz.replace(/[^\p{L}\p{N} .,&'-]/gu,'').slice(0,60);
+})();
+
+render();
+</script>
+</body>
+</html>

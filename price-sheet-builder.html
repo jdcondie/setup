@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Price Sheet Builder</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --orange:#E8541A;--orange-light:#FFF3EE;--orange-mid:#F97440;
+  --black:#111;--gray-700:#3d3d3d;--gray-500:#717171;--gray-300:#d4d4d4;--gray-100:#f5f5f5;--gray-50:#fafafa;--white:#fff;
+  --green:#16a34a;--green-bg:#dcfce7;--red:#dc2626;--red-bg:#fee2e2;--blue:#2563eb;--blue-bg:#eff6ff;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--gray-50);color:var(--black);font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;line-height:1.6}
+header{background:var(--white);border-bottom:1px solid var(--gray-300);padding:22px 24px}
+.head-inner{max-width:1160px;margin:0 auto}
+.eyebrow{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--orange);margin-bottom:6px}
+h1{font-size:clamp(24px,3.5vw,32px);font-weight:800;letter-spacing:-.02em;line-height:1.15}
+.sub{font-size:15px;color:var(--gray-500);margin-top:6px;max-width:640px}
+.layout{max-width:1160px;margin:0 auto;padding:24px;display:grid;grid-template-columns:1fr 400px;gap:24px;align-items:start}
+.panel{background:var(--white);border:1.5px solid var(--gray-300);border-radius:14px;padding:22px 24px;margin-bottom:16px}
+.panel h2{font-size:18px;font-weight:800;letter-spacing:-.02em;margin-bottom:4px}
+.panel .hint{font-size:13px;color:var(--gray-500);margin-bottom:14px}
+label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--gray-500);margin-bottom:4px}
+input,textarea{width:100%;font-family:inherit;font-size:14px;padding:9px 12px;border:1.5px solid var(--gray-300);border-radius:8px;background:var(--gray-50);color:var(--black)}
+input:focus,textarea:focus{outline:none;border-color:var(--orange);background:var(--white)}
+textarea{resize:vertical;min-height:56px;line-height:1.5}
+.row2{display:grid;grid-template-columns:1fr 140px;gap:10px}
+.field{margin-bottom:12px}
+.job{border:1.5px solid var(--gray-300);border-radius:12px;padding:16px;margin-bottom:14px;background:var(--gray-50)}
+.job-head{display:flex;gap:10px;align-items:flex-start;margin-bottom:12px}
+.job-head .field{flex:1;margin-bottom:0}
+.mod{display:grid;grid-template-columns:1fr 130px 40px;gap:8px;align-items:center;margin-bottom:8px}
+.mod select,.mod input{font-size:13px;padding:7px 9px}
+.mod .x{border:1.5px solid var(--gray-300);background:var(--white);border-radius:8px;height:36px;cursor:pointer;color:var(--gray-500);font-weight:700}
+.mod .x:hover{border-color:var(--red);color:var(--red)}
+.btn{font-family:inherit;font-weight:700;font-size:13px;padding:9px 16px;border-radius:8px;cursor:pointer;border:1.5px solid var(--gray-300);background:var(--white);color:var(--gray-700);transition:all .12s}
+.btn:hover{border-color:var(--gray-500)}
+.btn.orange{background:var(--orange);border-color:var(--orange);color:var(--white)}
+.btn.orange:hover{background:var(--orange-mid)}
+.btn.copied{background:var(--green);border-color:var(--green);color:var(--white)}
+.btn.small{padding:6px 12px;font-size:12px}
+.btn.del{color:var(--gray-500)}
+.btn.del:hover{border-color:var(--red);color:var(--red)}
+.add-row{display:flex;gap:8px;margin-top:6px}
+.preview-wrap{position:sticky;top:24px}
+.preview{background:#16181d;color:#e8e8e8;border-radius:12px;padding:18px 18px 0;font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:12px;line-height:1.6;white-space:pre-wrap;word-break:break-word;max-height:62vh;overflow-y:auto}
+.preview .k{color:#f9a072}
+.pv-foot{padding:14px 0}
+.pv-actions{display:flex;gap:8px;margin-top:12px}
+.pv-actions .btn{flex:1;justify-content:center}
+.done-note{font-size:12px;color:var(--gray-500);margin-top:10px;line-height:1.5}
+.example{font-size:12px;color:var(--gray-500);font-style:italic;margin-top:4px}
+.count-tag{font-size:12px;font-weight:700;color:var(--orange);background:var(--orange-light);padding:2px 9px;border-radius:100px;margin-left:8px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.preview-wrap{position:static}.preview{max-height:340px}}
+</style>
+</head>
+<body>
+<header><div class="head-inner">
+  <div class="eyebrow">Setup homework · 15 minutes</div>
+  <h1>Your Price Sheet Builder</h1>
+  <p class="sub">Fill this in the way you'd quote a job in your head. It builds a clean price list as you type. When it looks right, copy it and send it back. This is what teaches the AI to draft your quotes without ever inventing a number.</p>
+</div></header>
+
+<div class="layout">
+  <div>
+    <div class="panel">
+      <h2>The basics</h2>
+      <div class="hint">Just so the sheet has your name on it.</div>
+      <div class="field"><label>Business name</label><input id="biz" placeholder="Ridgeline HVAC"></div>
+      <div class="field"><label>Trade / what you do</label><input id="trade" placeholder="Residential heating & cooling"></div>
+    </div>
+
+    <div class="panel">
+      <h2>Your jobs <span class="count-tag" id="jobCount">0</span></h2>
+      <div class="hint">Add each common job type. For each: a base price with a one-line description of what "base" includes, then the add-ons and swaps that move the price. If something always needs you to look first, mark it "quote separately" so the AI never guesses.</div>
+      <div id="jobs"></div>
+      <button class="btn orange" id="addJob">+ Add a job type</button>
+    </div>
+
+    <div class="panel">
+      <h2>Fine print</h2>
+      <div class="hint">The stuff that goes at the bottom of every quote.</div>
+      <div class="field"><label>What's always excluded</label><textarea id="excl" placeholder="Permits unless noted. Drywall repair. Anything behind a wall we can't see."></textarea></div>
+      <div class="field"><label>Payment terms</label><input id="terms" placeholder="50% to schedule, balance on completion"></div>
+      <div class="field"><label>How long a quote stays good</label><input id="valid" placeholder="30 days"></div>
+    </div>
+  </div>
+
+  <div class="preview-wrap">
+    <div class="preview" id="preview"></div>
+    <div class="pv-foot">
+      <div class="pv-actions">
+        <button class="btn orange" id="copyBtn">Copy price sheet</button>
+        <button class="btn" id="dlBtn">Download .md</button>
+      </div>
+      <div class="done-note">When it looks right, hit copy and paste it into an email back to Jay (or download and attach it). Don't worry about making it perfect. We fine-tune it together on the call.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const state={jobs:[]};
+const MODKINDS=[
+  {v:'add',label:'costs extra (+$)'},
+  {v:'included',label:'included, no charge'},
+  {v:'quote',label:'quote separately (needs site visit)'},
+  {v:'price',label:'flat price ($)'},
+  {v:'note',label:'note only (no price)'}
+];
+
+function uid(){return 'j'+state.jobs.length+'_'+Math.floor(performance.now()*1000%1e6)}
+
+function addJob(seed){
+  const job={id:uid(),name:seed&&seed.name||'',base:seed&&seed.base||'',desc:seed&&seed.desc||'',mods:[]};
+  state.jobs.push(job);
+  if(seed&&seed.mods)seed.mods.forEach(m=>job.mods.push({kind:m.kind,label:m.label,val:m.val||''}));
+  else addMod(job);
+  renderJobs();render();
+}
+function addMod(job){job.mods.push({kind:'add',label:'',val:''})}
+
+function renderJobs(){
+  const wrap=$('jobs');wrap.innerHTML='';
+  state.jobs.forEach((job,ji)=>{
+    const el=document.createElement('div');el.className='job';
+    let modsHtml='';
+    job.mods.forEach((m,mi)=>{
+      const opts=MODKINDS.map(k=>`<option value="${k.v}"${k.v===m.kind?' selected':''}>${k.label}</option>`).join('');
+      const showVal=(m.kind==='add'||m.kind==='price');
+      modsHtml+=`<div class="mod">
+        <input data-j="${ji}" data-m="${mi}" data-f="label" value="${esc(m.label)}" placeholder="${mi===0?'50-gallon instead of 40':'add-on or swap'}">
+        <select data-j="${ji}" data-m="${mi}" data-f="kind">${opts}</select>
+        <button class="x" data-del-mod="${ji}:${mi}" title="remove">×</button>
+        ${showVal?`<input style="grid-column:1 / -1" data-j="${ji}" data-m="${mi}" data-f="val" value="${esc(m.val)}" placeholder="amount, e.g. 300">`:''}
+      </div>`;
+    });
+    el.innerHTML=`
+      <div class="job-head">
+        <div class="field"><label>Job name</label><input data-job="${ji}" data-f="name" value="${esc(job.name)}" placeholder="Water heater replacement"></div>
+        <div class="field" style="width:150px;flex:none"><label>Base price $</label><input data-job="${ji}" data-f="base" value="${esc(job.base)}" placeholder="1850"></div>
+      </div>
+      <div class="field"><label>What "base" includes (one line)</label><input data-job="${ji}" data-f="desc" value="${esc(job.desc)}" placeholder="40-gal gas, standard swap, haul-away included"></div>
+      <label>Add-ons, swaps &amp; special cases</label>
+      ${modsHtml}
+      <div class="add-row">
+        <button class="btn small" data-add-mod="${ji}">+ Add-on / swap</button>
+        <button class="btn small del" data-del-job="${ji}" style="margin-left:auto">Delete job</button>
+      </div>`;
+    wrap.appendChild(el);
+  });
+  $('jobCount').textContent=state.jobs.length;
+  wireJobInputs();
+}
+
+function wireJobInputs(){
+  document.querySelectorAll('[data-job]').forEach(inp=>{
+    inp.oninput=()=>{const j=state.jobs[+inp.dataset.job];j[inp.dataset.f]=inp.value;render()};
+  });
+  document.querySelectorAll('[data-j]').forEach(inp=>{
+    const handler=()=>{const j=state.jobs[+inp.dataset.j];const m=j.mods[+inp.dataset.m];m[inp.dataset.f]=inp.value;if(inp.dataset.f==='kind'){renderJobs()}render()};
+    inp.oninput=handler;inp.onchange=handler;
+  });
+  document.querySelectorAll('[data-add-mod]').forEach(b=>b.onclick=()=>{addMod(state.jobs[+b.dataset.addMod]);renderJobs();render()});
+  document.querySelectorAll('[data-del-job]').forEach(b=>b.onclick=()=>{state.jobs.splice(+b.dataset.delJob,1);renderJobs();render()});
+  document.querySelectorAll('[data-del-mod]').forEach(b=>b.onclick=()=>{const[j,m]=b.dataset.delMod.split(':').map(Number);state.jobs[j].mods.splice(m,1);renderJobs();render()});
+}
+
+function esc(s){return String(s==null?'':s).replace(/"/g,'&quot;').replace(/</g,'&lt;')}
+
+function buildMd(){
+  const biz=$('biz').value.trim()||'[Business]';
+  const trade=$('trade').value.trim();
+  let out=`# ${biz} price list\n`;
+  if(trade)out+=`> ${trade}\n`;
+  out+=`> Source of truth for quote drafting. Every price the AI uses comes from this file. Anything not here gets marked NEEDS PRICE, never guessed.\n\n`;
+  state.jobs.forEach(job=>{
+    const name=job.name.trim()||'[unnamed job]';
+    out+=`## ${name}\n`;
+    if(job.base.trim()){out+=`- Base: $${job.base.trim()}${job.desc.trim()?` (${job.desc.trim()})`:''}\n`;}
+    else if(job.desc.trim()){out+=`- ${job.desc.trim()}\n`;}
+    job.mods.forEach(m=>{
+      const label=m.label.trim();if(!label&&!m.val)return;
+      if(m.kind==='add')out+=`- ${label||'[add-on]'}: +$${(m.val||'').trim()||'?'}\n`;
+      else if(m.kind==='price')out+=`- ${label||'[option]'}: $${(m.val||'').trim()||'?'}\n`;
+      else if(m.kind==='included')out+=`- ${label||'[item]'}: included\n`;
+      else if(m.kind==='quote')out+=`- ${label||'[item]'}: quote separately, NEEDS SITE VISIT\n`;
+      else out+=`- ${label}\n`;
+    });
+    out+=`\n`;
+  });
+  const excl=$('excl').value.trim(),terms=$('terms').value.trim(),valid=$('valid').value.trim();
+  if(excl||terms||valid){
+    out+=`## Fine print\n`;
+    if(excl)out+=`- Excluded: ${excl.replace(/\n/g,'; ')}\n`;
+    if(terms)out+=`- Payment: ${terms}\n`;
+    if(valid)out+=`- Quotes valid for: ${valid}\n`;
+    out+=`\n`;
+  }
+  return out.trimEnd()+'\n';
+}
+
+function render(){
+  const md=buildMd();
+  $('preview').textContent=md;
+}
+
+function copyText(text,btn,label){
+  const orig=btn.textContent;
+  const ok=()=>{btn.textContent='Copied ✓';btn.classList.add('copied');setTimeout(()=>{btn.textContent=orig;btn.classList.remove('copied')},1500)};
+  const legacy=()=>{const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();let done=false;try{done=document.execCommand('copy')}catch(e){}document.body.removeChild(ta);if(done){ok()}else{btn.textContent='Press Cmd+C';setTimeout(()=>btn.textContent=orig,2000)}};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(ok).catch(legacy)}else{legacy()}
+}
+
+$('addJob').onclick=()=>addJob();
+['biz','trade','excl','terms','valid'].forEach(id=>$(id).oninput=render);
+$('copyBtn').onclick=e=>copyText(buildMd(),e.target);
+$('dlBtn').onclick=()=>{const blob=new Blob([buildMd()],{type:'text/markdown'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='price-list.md';a.click()};
+
+// seed with one example job so the preview is never empty and they see the shape
+addJob({name:'',base:'',desc:'',mods:[{kind:'add',label:'',val:''}]});
+render();
+</script>
+</body>
+</html>
