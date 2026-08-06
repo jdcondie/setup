@@ -1,0 +1,4843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Adaptation Ratio Assessment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@500;700&family=DM+Mono&display=swap" rel="stylesheet">
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<style>
+  :root {
+    --orange:       #E8541A;
+    --orange-light: #FFF3EE;
+    --orange-mid:   #F97440;
+    --black:        #111111;
+    --gray-900:     #1a1a1a;
+    --gray-700:     #3d3d3d;
+    --gray-500:     #717171;
+    --gray-300:     #d4d4d4;
+    --gray-100:     #f5f5f5;
+    --gray-50:      #fafafa;
+    --white:        #ffffff;
+    --green:        #16a34a;
+    --yellow:       #ca8a04;
+    --red:          #dc2626;
+    --blue:         #2563eb;
+    --green-bg:     #dcfce7;
+    --red-bg:       #fee2e2;
+    --blue-bg:      #eff6ff;
+    --orange-bg:    var(--orange-light);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--white);
+    color: var(--black);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; cursor: pointer; border: none; }
+
+  .container {
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  .eyebrow {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--orange);
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 22px;
+    background: var(--orange);
+    color: white;
+    font-weight: 700;
+    font-size: 15px;
+    border-radius: 8px;
+    transition: background 0.15s, transform 0.15s;
+  }
+  .btn-primary:hover { background: var(--orange-mid); transform: translateY(-1px); }
+
+  .btn-primary.lg {
+    padding: 18px 32px;
+    font-size: 16px;
+    border-radius: 8px;
+  }
+
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 22px;
+    background: var(--white);
+    color: var(--black);
+    border: 1.5px solid var(--gray-300);
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 15px;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .btn-ghost:hover { border-color: var(--orange); color: var(--orange); }
+
+  /* ─── Fade-up on scroll ─────────────────────────────────── */
+  .reveal{opacity:0;transform:translateY(16px);transition:opacity .55s ease,transform .55s ease}
+  .reveal.is-in{opacity:1;transform:none}
+  @media (prefers-reduced-motion: reduce){
+    .reveal{opacity:1;transform:none;transition:none}
+  }
+
+  /* ─── NAV ──────────────────────────────────────────────── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--gray-300);
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+  }
+  .nav-logo {
+    font-weight: 800;
+    font-size: 16px;
+    letter-spacing: -0.01em;
+  }
+  .nav-logo span { color: var(--orange); }
+  .nav-cta {
+    padding: 8px 16px;
+    background: var(--orange);
+    color: white;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 13px;
+  }
+  .nav-cta:hover { background: var(--orange-mid); }
+
+  /* ─── HERO ─────────────────────────────────────────────── */
+  .hero {
+    padding: 88px 0 64px;
+    position: relative;
+  }
+  .hero-inner {
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    gap: 64px;
+    align-items: center;
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: var(--orange-light);
+    color: var(--orange);
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    margin-bottom: 24px;
+  }
+  .hero-badge .dot {
+    width: 6px; height: 6px;
+    background: var(--orange);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--orange);
+    animation: pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes benchPulse {
+    0%, 100% { filter: brightness(1); box-shadow: 0 0 0 rgba(232,84,26,0); }
+    50% { filter: brightness(1.25); box-shadow: 0 0 18px rgba(232,84,26,0.5); }
+  }
+
+  .hero h1 {
+    font-size: clamp(36px, 5.5vw, 60px);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    margin-bottom: 22px;
+    color: var(--black);
+  }
+  .hero h1 .accent { color: var(--orange); }
+  .hero-sub {
+    font-size: 17px;
+    color: var(--gray-700);
+    line-height: 1.55;
+    margin-bottom: 32px;
+    max-width: 540px;
+  }
+  .hero-sub strong { color: var(--black); font-weight: 700; }
+  .hero-ctas {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  .hero-note {
+    font-size: 13px;
+    color: var(--gray-500);
+  }
+
+  .hero-q1 {
+    background: var(--white);
+    border: 1.5px solid var(--gray-300);
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin-bottom: 18px;
+    max-width: 540px;
+    box-shadow: 0 8px 28px rgba(17,17,17,0.06);
+  }
+  .hero-q1-label {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--orange);
+    margin-bottom: 12px;
+  }
+  .hero-q1-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .q1-chip {
+    padding: 10px 14px;
+    background: var(--gray-100);
+    border: 1px solid var(--gray-300);
+    border-radius: 99px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-700);
+    transition: border-color 0.15s, background 0.15s, color 0.15s;
+  }
+  .q1-chip:hover {
+    background: var(--orange-light);
+    border-color: var(--orange);
+    color: var(--orange);
+  }
+
+  .hero-visual {
+    background: var(--white);
+    border: 1.5px solid var(--gray-300);
+    border-radius: 16px;
+    padding: 26px 26px 22px;
+    box-shadow: 0 24px 60px rgba(17,17,17,0.08);
+    position: relative;
+  }
+  .viz-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gray-500);
+    padding: 4px 10px;
+    border: 1px solid var(--gray-300);
+    border-radius: 100px;
+    background: var(--white);
+  }
+  .viz-tag .d {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--orange);
+    box-shadow: 0 0 8px var(--orange);
+    animation: pulse 1.8s ease-in-out infinite;
+  }
+  .viz-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+  }
+  .viz-industry {
+    font-size: 11px;
+    color: var(--gray-500);
+    font-weight: 600;
+  }
+  .viz-hero-row {
+    display: flex;
+    gap: 18px;
+    align-items: flex-end;
+    margin-bottom: 8px;
+  }
+  .viz-ratio {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 72px;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    color: var(--black);
+    line-height: 0.95;
+  }
+  .viz-rside { padding-bottom: 4px; }
+  .viz-rside-lbl {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+  }
+  .viz-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    background: #fee2e2;
+    color: #b91c1c;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .viz-chip.warn { background: #fef3c7; color: #b45309; }
+  .viz-chip.ok { background: #dcfce7; color: #166534; }
+  .viz-sub {
+    font-size: 13px;
+    color: var(--gray-700);
+    line-height: 1.5;
+    margin-bottom: 20px;
+  }
+  .viz-sub strong { color: var(--black); font-weight: 700; }
+  .viz-chart {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-300);
+    border-radius: 10px;
+    padding: 14px 14px 10px;
+    margin-bottom: 18px;
+  }
+  .viz-chart-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gray-500);
+    margin-bottom: 10px;
+  }
+  .viz-chart-legend {
+    display: inline-flex;
+    gap: 10px;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+  }
+  .viz-chart-legend span { display: inline-flex; align-items: center; gap: 5px; }
+  .viz-chart-legend i {
+    display: inline-block;
+    width: 8px; height: 2px;
+    background: currentColor;
+  }
+  .viz-chart svg { display: block; width: 100%; height: 90px; }
+  .viz-gaps {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .viz-gap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-300);
+    border-radius: 8px;
+  }
+  .viz-gap-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--orange);
+    width: 14px;
+  }
+  .viz-gap-label {
+    flex: 1;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--black);
+  }
+  .viz-gap-score {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--gray-500);
+    font-weight: 700;
+  }
+
+  /* ─── STAT BAND ─────────────────────────────────────────── */
+  .stat-band {
+    padding: 40px 0;
+    border-top: 1px solid var(--gray-300);
+    border-bottom: 1px solid var(--gray-300);
+    background: var(--gray-50);
+  }
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 32px;
+    text-align: center;
+  }
+  .stat-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: clamp(28px, 3.6vw, 40px);
+    font-weight: 700;
+    color: var(--orange);
+    letter-spacing: -0.02em;
+    margin-bottom: 6px;
+  }
+  .stat-label {
+    font-size: 13px;
+    color: var(--gray-700);
+    line-height: 1.4;
+  }
+
+  /* ─── SECTION BASE ──────────────────────────────────────── */
+  section.block { padding: 96px 0; }
+  .section-head {
+    text-align: center;
+    max-width: 640px;
+    margin: 0 auto 56px;
+  }
+  .section-head h2 {
+    font-size: clamp(26px, 3.5vw, 38px);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    line-height: 1.15;
+    color: var(--black);
+    margin: 12px 0 14px;
+  }
+  .section-head p {
+    font-size: 16px;
+    color: var(--gray-700);
+    line-height: 1.6;
+  }
+
+  /* ─── HOW IT WORKS ──────────────────────────────────────── */
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+  .step {
+    background: var(--white);
+    border: 1.5px solid var(--gray-300);
+    border-radius: 12px;
+    padding: 28px 24px;
+    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+  }
+  .step:hover {
+    border-color: var(--orange);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+  }
+  .step-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--orange);
+    margin-bottom: 14px;
+    letter-spacing: 0.1em;
+  }
+  .step h3 {
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--black);
+    margin-bottom: 8px;
+    letter-spacing: -0.01em;
+  }
+  .step p {
+    font-size: 14px;
+    color: var(--gray-700);
+    line-height: 1.55;
+  }
+
+  /* ─── WHAT YOU GET ──────────────────────────────────────── */
+  .get-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+  .get-card {
+    background: var(--white);
+    border: 1.5px solid var(--gray-300);
+    border-radius: 12px;
+    padding: 26px 24px;
+    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+  }
+  .get-card:hover {
+    border-color: var(--orange);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+  }
+  .get-icon {
+    width: 40px; height: 40px;
+    background: var(--orange-light);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    margin-bottom: 16px;
+  }
+  .get-card h4 {
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--black);
+    margin-bottom: 6px;
+    letter-spacing: -0.01em;
+  }
+  .get-card p {
+    font-size: 14px;
+    color: var(--gray-700);
+    line-height: 1.55;
+  }
+
+  /* ─── ORANGE BREAK ──────────────────────────────────────── */
+  .break {
+    background: var(--orange);
+    padding: 64px 0;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .break::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.12) 0%, transparent 50%);
+  }
+  .break h3 {
+    font-size: clamp(26px, 3.5vw, 40px);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    line-height: 1.2;
+    color: white;
+    position: relative;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  /* ─── COMPARISON ────────────────────────────────────────── */
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    max-width: 960px;
+    margin: 0 auto;
+  }
+  .compare-col {
+    background: var(--white);
+    border: 1.5px solid var(--gray-300);
+    border-radius: 12px;
+    padding: 30px 28px;
+  }
+  .compare-col.bad { background: var(--gray-50); }
+  .compare-col.good {
+    border-color: var(--orange);
+    box-shadow: 0 12px 40px rgba(232,84,26,0.1);
+  }
+  .compare-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--gray-300);
+  }
+  .compare-tag {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 4px;
+  }
+  .compare-tag.bad { background: var(--red-bg); color: var(--red); }
+  .compare-tag.good { background: var(--orange-light); color: var(--orange); }
+  .compare-col h3 {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--black);
+    letter-spacing: -0.015em;
+  }
+  .compare-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .compare-list li {
+    display: flex;
+    gap: 12px;
+    font-size: 14.5px;
+    line-height: 1.5;
+    align-items: flex-start;
+  }
+  .compare-list li .mark {
+    flex-shrink: 0;
+    width: 20px; height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 800;
+    border-radius: 4px;
+    margin-top: 1px;
+  }
+  .compare-list li.bad-row { color: var(--gray-500); }
+  .compare-list li.bad-row .mark { background: var(--red-bg); color: var(--red); }
+  .compare-list li.good-row { color: var(--gray-900); }
+  .compare-list li.good-row .mark { background: var(--green-bg); color: var(--green); }
+
+  /* ─── FAQ ───────────────────────────────────────────────── */
+  .faq-wrap {
+    max-width: 760px;
+    margin: 0 auto;
+  }
+  .faq-item {
+    background: var(--white);
+    border: 1.5px solid var(--gray-300);
+    border-radius: 12px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .faq-item[open] { border-color: var(--orange); }
+  .faq-item summary {
+    padding: 20px 22px;
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--black);
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .faq-item summary::-webkit-details-marker { display: none; }
+  .faq-item summary::after {
+    content: '+';
+    font-size: 22px;
+    font-weight: 400;
+    color: var(--orange);
+    transition: transform 0.2s;
+  }
+  .faq-item[open] summary::after { transform: rotate(45deg); }
+  .faq-body {
+    padding: 0 22px 22px;
+    color: var(--gray-700);
+    font-size: 14.5px;
+    line-height: 1.6;
+  }
+
+  /* ─── ASSESSMENT EMBED ──────────────────────────────────── */
+  .embed-section {
+    padding: 100px 0 120px;
+    background: linear-gradient(180deg, var(--gray-50) 0%, var(--white) 100%);
+    position: relative;
+  }
+  .embed-head {
+    text-align: center;
+    max-width: 640px;
+    margin: 0 auto 44px;
+  }
+  .embed-head h2 {
+    font-size: clamp(32px, 4.5vw, 48px);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    color: var(--black);
+    margin: 12px 0 14px;
+  }
+  .embed-head p {
+    font-size: 17px;
+    color: var(--gray-700);
+  }
+  .embed-meta {
+    margin-top: 18px;
+    font-size: 13px;
+    color: var(--gray-500);
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .embed-meta span::before {
+    content: '✓';
+    color: var(--orange);
+    margin-right: 6px;
+    font-weight: 800;
+  }
+
+  /* ─── FOOTER ────────────────────────────────────────────── */
+  footer {
+    padding: 36px 0;
+    border-top: 1px solid var(--gray-300);
+    text-align: center;
+    font-size: 13px;
+    color: var(--gray-500);
+    background: var(--white);
+  }
+
+  /* ─── STICKY MOBILE CTA ─────────────────────────────────── */
+  .sticky-cta {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 12px 16px;
+    background: rgba(255,255,255,0.96);
+    backdrop-filter: blur(12px);
+    border-top: 1.5px solid var(--gray-300);
+    z-index: 100;
+  }
+  .sticky-cta a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 14px;
+    background: var(--orange);
+    color: white;
+    border-radius: 8px;
+    font-weight: 800;
+    font-size: 15px;
+  }
+
+  /* ─── HERO ADD-ONS ──────────────────────────────────────── */
+  .hero-qualifier {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--gray-500);
+    margin-bottom: 14px;
+  }
+  .hero-cue {
+    display: inline-block;
+    margin-left: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gray-500);
+    border-bottom: 1px dashed var(--gray-300);
+    padding-bottom: 2px;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .hero-cue:hover { color: var(--orange); border-color: var(--orange); }
+  .hero-trust {
+    font-size: 12px;
+    color: var(--gray-500);
+    margin-top: 6px;
+  }
+  .viz-chart-legend-line {
+    font-size: 12px;
+    color: var(--gray-500);
+    font-style: italic;
+    margin: -4px 0 16px;
+    line-height: 1.4;
+  }
+
+  /* ─── SOCIAL PROOF STRIP ────────────────────────────────── */
+  .social-proof {
+    background: var(--orange-light);
+    border-top: 1px solid var(--gray-300);
+    border-bottom: 1px solid var(--gray-300);
+    padding: 36px 0;
+  }
+  .social-proof-quote {
+    text-align: center;
+    font-size: 17px;
+    font-style: italic;
+    color: var(--gray-700);
+    max-width: 640px;
+    margin: 0 auto 8px;
+    line-height: 1.5;
+  }
+  .social-proof-attr {
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-500);
+    letter-spacing: 0.04em;
+    margin-bottom: 28px;
+  }
+  .social-proof-label {
+    text-align: center;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--gray-500);
+    margin-bottom: 14px;
+  }
+  .logo-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .logo-placeholder {
+    width: 110px;
+    height: 36px;
+    background: var(--gray-100);
+    border: 1px solid var(--gray-300);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    color: var(--gray-500);
+  }
+
+  /* ─── COMPARE STRIP (above-fold) ────────────────────────── */
+  .compare-strip {
+    background: var(--white);
+    border-bottom: 1px solid var(--gray-300);
+    padding: 24px 0;
+  }
+  .compare-strip-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border: 1px solid var(--gray-300);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .compare-strip-col {
+    padding: 16px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .compare-strip-col.left {
+    background: var(--gray-50);
+    border-right: 1px solid var(--gray-300);
+  }
+  .compare-strip-col.right {
+    background: var(--white);
+    border-left: 3px solid var(--orange);
+  }
+  .compare-strip-head {
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .compare-strip-col.left .compare-strip-head { color: var(--gray-500); }
+  .compare-strip-col.right .compare-strip-head { color: var(--orange); }
+  .compare-strip-body {
+    font-size: 14px;
+    line-height: 1.4;
+  }
+  .compare-strip-col.left .compare-strip-body { color: var(--gray-500); }
+  .compare-strip-col.right .compare-strip-body { color: var(--black); font-weight: 600; }
+  .compare-strip-mark { font-weight: 900; }
+
+  /* ─── COMPARISON COST LINE ──────────────────────────────── */
+  .compare-cost {
+    text-align: center;
+    font-size: 14px;
+    font-style: italic;
+    color: var(--gray-500);
+    margin-top: 28px;
+    max-width: 720px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.5;
+  }
+
+  /* ─── EMBED PROMO + FINAL LINK ──────────────────────────── */
+  .embed-meta-promo {
+    display: inline-block;
+    margin-top: 20px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--black);
+    background: var(--orange-light);
+    padding: 8px 18px;
+    border-radius: 100px;
+  }
+  .final-link {
+    display: block;
+    text-align: center;
+    margin-top: 28px;
+    font-size: 13px;
+    color: var(--gray-500);
+    text-decoration: underline;
+    text-decoration-color: var(--gray-300);
+    text-underline-offset: 3px;
+  }
+  .final-link:hover { color: var(--orange); text-decoration-color: var(--orange); }
+
+  /* ─── RESPONSIVE ────────────────────────────────────────── */
+  @media (max-width: 960px) {
+    .hero-inner { grid-template-columns: 1fr; gap: 48px; }
+    .hero-visual { order: -1; max-width: 480px; margin: 0 auto; }
+    .stat-grid { grid-template-columns: repeat(2, 1fr); gap: 24px; }
+    .steps { grid-template-columns: repeat(2, 1fr); }
+    .get-grid { grid-template-columns: repeat(2, 1fr); }
+    section.block { padding: 72px 0; }
+    .container { padding: 0 24px; }
+  }
+  @media (max-width: 600px) {
+    nav { padding: 0 20px; }
+    .hero { padding: 48px 0 40px; }
+    .hero-sub { font-size: 16px; }
+    .stat-grid { grid-template-columns: repeat(2, 1fr); }
+    .steps { grid-template-columns: 1fr; }
+    .get-grid { grid-template-columns: 1fr; }
+    .compare-grid { grid-template-columns: 1fr; }
+    .compare-strip-grid { grid-template-columns: 1fr; }
+    .compare-strip-col.left { border-right: none; border-bottom: 1px solid var(--gray-300); }
+    .compare-strip-col.right { border-left: none; border-top: 3px solid var(--orange); }
+    section.block { padding: 56px 0; }
+    .embed-section { padding: 64px 0 96px; }
+    .btn-primary, .btn-ghost { width: 100%; justify-content: center; }
+    .hero-ctas { flex-direction: column; }
+    .viz-ratio { font-size: 72px; }
+    .sticky-cta { display: block; }
+    body { padding-bottom: 72px; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- ═══ NAV ══════════════════════════════════════════════ -->
+  <nav>
+    <div class="nav-logo">AI Adaptation Ratio<span>.</span></div>
+    <a href="#assessment" class="nav-cta">Start Free →</a>
+  </nav>
+
+  <!-- ═══ HERO ═════════════════════════════════════════════ -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-inner">
+        <div>
+          <span class="hero-badge"><span class="dot"></span> Free · 4 Minutes · 13 Questions</span>
+          <span class="hero-qualifier">For owners who want a straight answer on where their business stands with AI.</span>
+          <h1>Find out how many months behind on AI your business really is <span class="accent">in 4 minutes</span>.</h1>
+          <p class="hero-sub">A real number against the market, your top 3 gaps, and a 30/60/90 action map of exactly what to fix first.</p>
+          <div class="hero-q1">
+            <div class="hero-q1-label">Question 1 of 13 · What type of business do you run?</div>
+            <div class="hero-q1-chips">
+              <button class="q1-chip" data-bt="0">Service business</button>
+              <button class="q1-chip" data-bt="1">Professional services</button>
+              <button class="q1-chip" data-bt="2">Healthcare</button>
+              <button class="q1-chip" data-bt="3">Retail / e-commerce</button>
+              <button class="q1-chip" data-bt="4">Construction / trades</button>
+              <button class="q1-chip" data-bt="5">Other</button>
+            </div>
+          </div>
+          <p class="hero-note">Tap one and you're in. 13 questions. No account.</p>
+          <p class="hero-trust">Your score shows free on the spot. No account, no paywall.</p>
+        </div>
+        <div class="hero-visual">
+          <div class="viz-header">
+            <span class="viz-tag"><span class="d"></span> Your report preview</span>
+            <span class="viz-industry">Service Businesses</span>
+          </div>
+
+          <div class="viz-hero-row">
+            <div class="viz-ratio">0.84</div>
+            <div class="viz-rside">
+              <div class="viz-rside-lbl">AI Adaptation Ratio</div>
+              <span class="viz-chip warn">● 2.7 months behind on AI</span>
+            </div>
+          </div>
+          <p class="viz-sub">You're <strong>0.16 below</strong> the market on AI adoption. Do nothing and you'll be <strong>8.7 months behind on AI</strong> in 12 months.</p>
+
+          <div class="viz-chart">
+            <div class="viz-chart-head">
+              <span>AI ADOPTION · 12-MONTH TRAJECTORY</span>
+              <span class="viz-chart-legend">
+                <span style="color:var(--gray-700);"><i></i>You</span>
+                <span style="color:var(--orange);"><i></i>Market</span>
+              </span>
+            </div>
+            <svg viewBox="0 0 300 90" preserveAspectRatio="none" aria-hidden="true">
+              <defs>
+                <linearGradient id="gap-grad" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stop-color="#E8541A" stop-opacity="0.18"/>
+                  <stop offset="100%" stop-color="#E8541A" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <!-- gap fill -->
+              <path d="M0,54 C60,50 120,45 180,38 C220,33 260,27 300,22 L300,62 C260,62 220,62 180,62 C120,62 60,60 0,58 Z" fill="url(#gap-grad)"/>
+              <!-- market line (orange) -->
+              <path d="M0,54 C60,50 120,45 180,38 C220,33 260,27 300,22" fill="none" stroke="#E8541A" stroke-width="2.2" stroke-linecap="round"/>
+              <!-- you line (flat grey) -->
+              <path d="M0,58 C80,60 160,61 240,62 C270,62 290,62 300,62" fill="none" stroke="#3d3d3d" stroke-width="2" stroke-dasharray="4 4" stroke-linecap="round"/>
+              <!-- end dots -->
+              <circle cx="300" cy="22" r="4" fill="#E8541A"/>
+              <circle cx="300" cy="62" r="4" fill="#3d3d3d"/>
+              <!-- baseline markers -->
+              <line x1="0" y1="80" x2="300" y2="80" stroke="#d4d4d4" stroke-dasharray="2 3" stroke-width="1"/>
+            </svg>
+          </div>
+          <p class="viz-chart-legend-line">Scores range 0 to 1.5. Above 0.8 = leading. Below 0.5 = falling behind.</p>
+
+          <div class="viz-gaps">
+            <div class="viz-gap"><span class="viz-gap-num">01</span><span class="viz-gap-label">Exposure Gap</span><span class="viz-gap-score">22/100</span></div>
+            <div class="viz-gap"><span class="viz-gap-num">02</span><span class="viz-gap-label">Depth Gap</span><span class="viz-gap-score">31/100</span></div>
+            <div class="viz-gap"><span class="viz-gap-num">03</span><span class="viz-gap-label">Breadth Gap</span><span class="viz-gap-score">38/100</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ COMPARE STRIP ════════════════════════════════════ -->
+  <section class="compare-strip">
+    <div class="container">
+      <div class="compare-strip-grid">
+        <div class="compare-strip-col left">
+          <div class="compare-strip-head"><span class="compare-strip-mark">✕</span> Other AI quizzes</div>
+          <div class="compare-strip-body">Vague score, sales pitch, drip campaign.</div>
+        </div>
+        <div class="compare-strip-col right">
+          <div class="compare-strip-head"><span class="compare-strip-mark">✓</span> This assessment</div>
+          <div class="compare-strip-body">Real ratio, industry benchmark, action map. No drip.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ STAT BAND ════════════════════════════════════════ -->
+  <section class="stat-band">
+    <div class="container">
+      <div class="stat-grid">
+        <div><div class="stat-num">0.62</div><div class="stat-label">Benchmark average the ratio is scored against</div></div>
+        <div><div class="stat-num">1.00<span style="font-size:18px;font-weight:700;">+</span></div><div class="stat-label">Matching the market's pace</div></div>
+        <div><div class="stat-num">6</div><div class="stat-label">Adoption archetypes. Owners usually guess theirs wrong.</div></div>
+        <div><div class="stat-num">6</div><div class="stat-label">Industry benchmarks included</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ HOW IT WORKS ═════════════════════════════════════ -->
+  <section class="block" id="how">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">What this measures</span>
+        <h2>Three pillars. One honest number.</h2>
+        <p>Most "AI readiness" surveys score whether you've heard of ChatGPT. This one scores whether it's actually changing how your business runs.</p>
+      </div>
+      <div class="steps">
+        <div class="step reveal"><div class="step-num">PILLAR 01</div><h3>Depth</h3><p>Is AI doing real work in your operation, or just helping draft emails? How deep it's integrated into the output you actually sell.</p></div>
+        <div class="step reveal"><div class="step-num">PILLAR 02</div><h3>Breadth</h3><p>How many of your people and functions are actually using it? A tool one person opens twice a week isn't the same as a system your whole team runs on.</p></div>
+        <div class="step reveal"><div class="step-num">PILLAR 03</div><h3>Velocity</h3><p>Are you adopting fast enough to keep pace with the market? Standing still is the same as falling behind when the market moves 0.06 every month.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ ORANGE BREAK ═════════════════════════════════════ -->
+  <section class="break">
+    <div class="container">
+      <h3>The market won't wait for you to be ready.</h3>
+    </div>
+  </section>
+
+  <!-- ═══ WHAT YOU GET ═════════════════════════════════════ -->
+  <section class="block">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">What you get</span>
+        <h2>A diagnosis you can act on Monday.</h2>
+        <p>Four outputs, tailored to your industry, team, and the specific answers you give. Plus your adoption archetype: there are six, and owners usually guess theirs wrong.</p>
+      </div>
+      <div class="get-grid" style="grid-template-columns:repeat(2,1fr);max-width:920px;margin:0 auto;">
+        <div class="get-card reveal"><div class="get-icon">📊</div><h4>Your ratio + months behind</h4><p>Your AI Adaptation Ratio on a 0.00–2.00 scale, translated into how many months behind (or ahead) the market you actually are.</p></div>
+        <div class="get-card reveal"><div class="get-icon">🎯</div><h4>Industry benchmark</h4><p>Where you land vs. the average, top 25%, and leaders in your specific industry. No generic "small business" averages.</p></div>
+        <div class="get-card reveal"><div class="get-icon">📈</div><h4>12-month trajectory</h4><p>A visual of where you and the market are headed if you do nothing. The shaded zone is the gap. It isn't flattering.</p></div>
+        <div class="get-card reveal"><div class="get-icon">💡</div><h4>Top 3 gaps + 30/60/90 action map</h4><p>The dimensions dragging your score down, ranked, with what to fix first and the one use case most likely to move your ratio.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ COMPARISON ═══════════════════════════════════════ -->
+  <section class="block" style="background: var(--gray-50);">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Why this one</span>
+        <h2>Generic AI quiz vs. this assessment.</h2>
+        <p>There are 500 AI readiness quizzes online. Here's what makes this one different.</p>
+      </div>
+      <div class="compare-grid">
+        <div class="compare-col bad">
+          <div class="compare-head">
+            <span class="compare-tag bad">Every other quiz</span>
+          </div>
+          <h3 style="margin-bottom: 16px;">Vague score. Generic output. Sales pitch.</h3>
+          <ul class="compare-list">
+            <li class="bad-row"><span class="mark">✕</span> Vague 0/100 score</li>
+            <li class="bad-row"><span class="mark">✕</span> Generic tips for any business</li>
+            <li class="bad-row"><span class="mark">✕</span> No industry comparison</li>
+            <li class="bad-row"><span class="mark">✕</span> 15+ minute survey</li>
+            <li class="bad-row"><span class="mark">✕</span> Email locked, drip for weeks</li>
+            <li class="bad-row"><span class="mark">✕</span> Sales call as expensive course</li>
+          </ul>
+        </div>
+        <div class="compare-col good">
+          <div class="compare-head">
+            <span class="compare-tag good">This assessment</span>
+          </div>
+          <h3 style="margin-bottom: 16px;">Live ratio. Real output. No drip.</h3>
+          <ul class="compare-list">
+            <li class="good-row"><span class="mark">✓</span> Decimal ratio benchmarked to market</li>
+            <li class="good-row"><span class="mark">✓</span> Scored across three pillars</li>
+            <li class="good-row"><span class="mark">✓</span> Top 3 gaps ranked for your business</li>
+            <li class="good-row"><span class="mark">✓</span> Industry benchmark + 12-month trajectory</li>
+            <li class="good-row"><span class="mark">✓</span> 13 questions, 3-4 minutes</li>
+            <li class="good-row"><span class="mark">✓</span> One email, your score, no drip</li>
+          </ul>
+        </div>
+      </div>
+      <p class="compare-cost">Generic quizzes waste 15 minutes and end with a sales call. This ends with a 30/60/90 action map you actually use.</p>
+    </div>
+  </section>
+
+  <!-- ═══ FAQ ══════════════════════════════════════════════ -->
+  <section class="block">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">FAQ</span>
+        <h2>Quick answers.</h2>
+      </div>
+      <div class="faq-wrap">
+        <details class="faq-item" open>
+          <summary>Is this actually free?</summary>
+          <div class="faq-body">Yes. No credit card, no paywall. Your score shows on the spot without an email. Enter your email to open the full breakdown.</div>
+        </details>
+        <details class="faq-item" open>
+          <summary>Why do you ask for my email?</summary>
+          <div class="faq-body">It opens your full report and gives you a record of where you scored. You'll want that in 90 days when you re-score and see how far the gap moved. No drip sequence. Unsubscribe in one click.</div>
+        </details>
+        <details class="faq-item">
+          <summary>What's the ratio based on?</summary>
+          <div class="faq-body">Your answers across depth (how integrated AI is into your real work), breadth (how many people and functions use it), and velocity (how fast you're adopting). Scored against a market baseline for current AI adoption patterns in your industry.</div>
+        </details>
+        <details class="faq-item">
+          <summary>How long does it take?</summary>
+          <div class="faq-body">3 to 4 minutes. 12 multiple-choice questions across the three pillars: depth, breadth, and velocity of AI adoption.</div>
+        </details>
+        <details class="faq-item">
+          <summary>What if I already use ChatGPT daily?</summary>
+          <div class="faq-body">Usage and depth are different. The assessment measures how AI is integrated into your workflows, not just whether someone on your team has an account. Plenty of heavy ChatGPT users still score below 1.00.</div>
+        </details>
+        <details class="faq-item">
+          <summary>Who built this?</summary>
+          <div class="faq-body">Jay Condie. I help service businesses and ops-heavy teams actually use AI to cut admin, capture leads, and run tighter. The assessment came out of the audit I run for paying clients.</div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ EMBEDDED ASSESSMENT ══════════════════════════════ -->
+  <section class="embed-section" id="assessment">
+    <div class="container">
+      <div class="embed-head">
+        <span class="eyebrow">Your move</span>
+        <h2>You've seen what it does. 4 minutes to find out where you stand.</h2>
+        <p>13 questions across 3 pillars. Your number shows on the spot. The full report opens right after.</p>
+        <div class="embed-meta">
+          <span>Free forever</span>
+          <span>13 questions</span>
+          <span>3–4 minutes</span>
+        </div>
+      </div>
+      <div id="assessment-root">
+        <div style="color: var(--gray-500); font-size: 14px; padding: 40px 0; text-align: center;">Loading assessment...</div>
+      </div>
+      <div style="text-align:center;">
+        <span class="embed-meta-promo">3–4 minutes. 13 questions. No account.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ FOOTER ═══════════════════════════════════════════ -->
+  <footer>
+    <div class="container">
+      Built by Jay Condie. Operator to operator.
+    </div>
+  </footer>
+
+  <!-- ═══ STICKY MOBILE CTA ════════════════════════════════ -->
+  <div class="sticky-cta">
+    <a href="#assessment">Start Free Assessment →</a>
+  </div>
+
+<script>
+  // Hero question-1 chips: answer lands in the quiz, page scrolls to it
+  (function () {
+    document.querySelectorAll('.q1-chip').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        try { sessionStorage.setItem('ratio-preanswer-bt', btn.dataset.bt); } catch (e) {}
+        window.dispatchEvent(new CustomEvent('ratio-preanswer', { detail: Number(btn.dataset.bt) }));
+        var target = document.getElementById('assessment');
+        if (target) target.scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+  })();
+
+  // window.storage shim for retake reminders
+  if (typeof window !== 'undefined' && !window.storage) {
+    window.storage = {
+      getItem: (k) => { try { return localStorage.getItem(k); } catch { return null; } },
+      setItem: (k, v) => { try { localStorage.setItem(k, v); } catch {} },
+      removeItem: (k) => { try { localStorage.removeItem(k); } catch {} },
+    };
+  }
+
+  // Fade-up on scroll
+  (function(){
+    const els = document.querySelectorAll('.reveal');
+    if(!('IntersectionObserver' in window)){els.forEach(e=>e.classList.add('is-in'));return;}
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach((e,i)=>{
+        if(e.isIntersecting){
+          setTimeout(()=>e.target.classList.add('is-in'), i*60);
+          io.unobserve(e.target);
+        }
+      });
+    },{threshold:0.12, rootMargin:'0px 0px -40px 0px'});
+    els.forEach(el=>io.observe(el));
+  })();
+</script>
+
+<script>
+const {
+  useState,
+  useEffect,
+  useRef
+} = React;
+const CAL_LINK = "https://cal.com/jay-condie/free-ai-audit";
+const SHARE_DOMAIN = "jdcondie.github.io/setup/ratio";
+const MARKET_BASELINE = 72;
+const NINETY_DAY_DRIFT = 0.18;
+const MARKET_DRIFT_CAP = 1.30;
+
+// ── Questions (12 total, 6 dimensions + 2 context) ─────────────────────────
+const questions = [{
+  id: "business_type",
+  dim: "CTX",
+  question: "What type of business do you run?",
+  type: "single",
+  options: ["Service business (HVAC, plumbing, landscaping, cleaning, etc.)", "Professional services (law, accounting, consulting, real estate)", "Healthcare or medical practice", "Retail or e-commerce", "Construction or trades", "Other / Manufacturing"]
+}, {
+  id: "team_size",
+  dim: "CTX",
+  question: "How many people are on your team?",
+  type: "single",
+  options: ["Just me", "2-10", "11-50", "51-200", "200+"]
+}, {
+  id: "role",
+  dim: "CTX",
+  question: "What's your seat at the table?",
+  type: "single",
+  skipWhen: answers => answers.team_size === 0,
+  options: ["Owner or co-founder. This is my business.", "I lead a team or department", "Executive or senior leadership", "I'm the one pushing AI here, whatever my title"]
+}, {
+  id: "exposure",
+  dim: "EXP",
+  question: "How is AI being used on your team right now?",
+  subtext: "Real usage, not experiments.",
+  type: "single",
+  options: ["Nobody uses it", "Just me, occasionally", "A few of us use it for one-off tasks", "Most of the team uses it regularly for individual work", "Most of the team uses it with shared prompts or processes"],
+  soloVariant: {
+    question: "How embedded is AI in your own working day?",
+    subtext: "Real usage, not experiments.",
+    options: ["I don't use it", "Occasionally, when I remember it exists", "Regularly, for one-off tasks", "Daily, for a real chunk of my work", "Systematically: saved prompts and repeatable processes for my core work"]
+  }
+}, {
+  id: "depth",
+  dim: "DEP",
+  question: "What is AI actually doing in your workflows?",
+  type: "single",
+  options: ["Nothing yet", "Helping with writing or one-off tasks", "Drafting deliverables that still need heavy editing", "Producing near-final output for specific tasks", "Running in the background without human kickoff"]
+}, {
+  id: "impact",
+  dim: "DEP",
+  question: "Can you name a process where AI removed real hours or a whole step?",
+  subtext: "Be honest. Vague counts as no.",
+  type: "single",
+  options: ["No", "Yes, we saved a few hours one time", "Yes, ongoing savings in one process", "Yes, across 2 to 3 processes", "Yes, across most of how we operate"]
+}, {
+  id: "breadth",
+  dim: "BRD",
+  question: "Which business functions have AI actively involved today?",
+  subtext: "Select all that apply.",
+  type: "multi",
+  options: ["Marketing or content", "Sales or outreach", "Customer support or communication", "Operations or project management", "Finance, admin, or data entry", "Product or service delivery", "Internal knowledge or search", "Hiring or HR", "None yet"],
+  soloVariant: {
+    question: "Which parts of your business have AI actively involved today?",
+    subtext: "Select all where AI does real work. Solo businesses rarely have more than 4 or 5 of these, and that's fine.",
+    options: ["Marketing or content", "Sales or outreach", "Customer support or communication", "Operations or project management", "Finance, admin, or data entry", "Product or service delivery", "Internal knowledge or search", "Hiring or HR", "None yet"]
+  }
+}, {
+  id: "data_connected",
+  dim: "DAT",
+  question: "How connected are your business tools today?",
+  type: "single",
+  options: ["Mostly disconnected. Lots of manual re-entry.", "A few connected, most manual", "Core stack connects through a CRM or ops platform", "Most tools talk to each other, some automation", "Fully integrated stack with automations running across tools"]
+}, {
+  id: "data_accessibility",
+  dim: "DAT",
+  question: "If someone asked AI 'what happened in the business last week?' could it actually answer?",
+  type: "single",
+  options: ["No. Data lives in heads and scattered files.", "Maybe, if someone exported reports first", "Some of it. Financial or CRM data, not much else.", "Yes, most of the business data is reachable", "Yes, AI can query most of our systems directly"]
+}, {
+  id: "ownership",
+  dim: "VEL",
+  question: "Who owns AI adoption in your business?",
+  type: "single",
+  options: ["Nobody. It's ad hoc.", "Me, on the side when I have time", "Me, with real time carved out", "A team member or role has it as part of their job", "A dedicated role or outside partner is driving it"],
+  soloVariant: {
+    question: "How deliberately are you driving AI in your business?",
+    options: ["I'm not. It's completely ad hoc.", "I poke at it when things are slow", "I have real time carved out for it", "It's a recurring block on my calendar with goals", "It's a scheduled, budgeted part of how I run the business"]
+  }
+}, {
+  id: "cadence",
+  dim: "VEL",
+  question: "How often is something new with AI getting built, tested, or deployed?",
+  type: "single",
+  options: ["Never", "Occasionally. A month can go by.", "A few times a quarter", "Monthly. Real experiments.", "Weekly. Constant improvement."]
+}, {
+  id: "constraint",
+  dim: "CTX",
+  question: "What's the biggest thing blocking AI from getting real in your business?",
+  type: "single",
+  options: ["Don't know where to start", "No time to implement", "Nobody on the team is technical enough", "Our data is a mess", "Team resistance or skepticism", "Tried before, didn't stick", "Budget"]
+}, {
+  id: "biggest_pain",
+  dim: "CTX",
+  question: "What's the single biggest time drain in your business right now?",
+  subtext: "Pick the one that keeps you up at night.",
+  type: "single",
+  options: ["Customer communication and response time", "Admin work, data entry, and paperwork", "Lead generation and follow-up", "Scheduling and operations coordination", "Managing team output and accountability", "Reporting and visibility into the business"]
+}];
+
+// ── Intent soft start (one tap before question 1) ──────────────────────────
+// resultsLine reframes the opening of the results page around why they came.
+const INTENTS = [{
+  label: "A competitor is clearly using it",
+  sub: "I want to know how much runway they have on me",
+  resultsLine: "You said a competitor moved first. The number below is roughly how much runway they have on you."
+}, {
+  label: "I'm drowning in admin",
+  sub: "Something has to come off my plate",
+  resultsLine: "You said the admin load is the problem. Watch your Depth and Breadth scores below; that's where the hours come back."
+}, {
+  label: "I know I'm behind. I don't know where to start",
+  sub: "Give me a starting point",
+  resultsLine: "You said you need a starting point. The 30/60/90 map below is that starting point, built from your answers."
+}, {
+  label: "Just curious where I stand",
+  sub: "Show me the honest read",
+  resultsLine: "You came in curious. Here's the honest read."
+}];
+const industryBenchmarks = {
+  0: {
+    name: "Service Businesses",
+    avgRatio: 0.62,
+    topQuartile: 0.91,
+    leader: 1.34
+  },
+  1: {
+    name: "Professional Services",
+    avgRatio: 0.71,
+    topQuartile: 0.98,
+    leader: 1.41
+  },
+  2: {
+    name: "Healthcare Practices",
+    avgRatio: 0.58,
+    topQuartile: 0.87,
+    leader: 1.28
+  },
+  3: {
+    name: "Retail / E-commerce",
+    avgRatio: 0.79,
+    topQuartile: 1.05,
+    leader: 1.48
+  },
+  4: {
+    name: "Construction / Trades",
+    avgRatio: 0.54,
+    topQuartile: 0.82,
+    leader: 1.21
+  },
+  5: {
+    name: "Manufacturing",
+    avgRatio: 0.66,
+    topQuartile: 0.94,
+    leader: 1.36
+  }
+};
+
+// ── Dimension scoring ──────────────────────────────────────────────────────
+const SINGLE_MAP = [10, 30, 50, 75, 95];
+const BREADTH_MAP = [10, 30, 45, 60, 75, 85, 92, 96];
+// Solo businesses saturate breadth around 4 functions; don't punish headcount.
+const SOLO_BREADTH_MAP = [20, 45, 68, 82, 92, 96, 98, 99];
+function scoreDimensions(answers, isSolo = false) {
+  const s = idx => idx === undefined ? 10 : SINGLE_MAP[idx] ?? 10;
+  const EXP = s(answers.exposure);
+  const DEP = Math.round((s(answers.depth) + s(answers.impact)) / 2);
+  const breadth = answers.breadth || [];
+  const noneIdx = 8;
+  const validCount = breadth.filter(i => i !== noneIdx).length;
+  const map = isSolo ? SOLO_BREADTH_MAP : BREADTH_MAP;
+  const BRD = validCount === 0 ? 10 : map[Math.min(validCount - 1, map.length - 1)];
+  const DAT = Math.round((s(answers.data_connected) + s(answers.data_accessibility)) / 2);
+  const VEL = Math.round((s(answers.ownership) + s(answers.cadence)) / 2);
+
+  // Solo weights: breadth de-emphasized, depth/velocity carry more.
+  const overall = isSolo ? Math.round(EXP * 0.10 + DEP * 0.30 + BRD * 0.10 + DAT * 0.20 + VEL * 0.30) : Math.round(EXP * 0.10 + DEP * 0.25 + BRD * 0.20 + DAT * 0.20 + VEL * 0.25);
+  return {
+    EXP,
+    DEP,
+    BRD,
+    DAT,
+    VEL,
+    overall
+  };
+}
+function getRatioTier(ratio) {
+  if (ratio >= 1.20) return {
+    label: "Market Leader",
+    color: "#22c55e"
+  };
+  if (ratio >= 1.00) return {
+    label: "Keeping Pace",
+    color: "#3b82f6"
+  };
+  if (ratio >= 0.80) return {
+    label: "Slipping Behind",
+    color: "#f59e0b"
+  };
+  if (ratio >= 0.60) return {
+    label: "Falling Behind",
+    color: "#f97316"
+  };
+  return {
+    label: "Critical Gap",
+    color: "#ef4444"
+  };
+}
+
+// Market moves 0.18 per 90 days = 0.06 per month on the ratio scale.
+// Convert a user's gap vs. the market (today market = 1.00 baseline) into months.
+const DRIFT_PER_MONTH = 0.06;
+function computeMonthsBehind(ratio) {
+  // Positive = behind. Negative = ahead. Capped at 24 for display sanity.
+  const raw = (1.00 - ratio) / DRIFT_PER_MONTH;
+  return Math.max(-24, Math.min(24, Math.round(raw * 10) / 10));
+}
+function getMonthsFrame(months) {
+  // months > 0 = behind, < 0 = ahead
+  if (months >= 12) return {
+    tone: "critical",
+    color: "#ef4444",
+    label: "Behind"
+  };
+  if (months >= 6) return {
+    tone: "bad",
+    color: "#f97316",
+    label: "Behind"
+  };
+  if (months >= 3) return {
+    tone: "warn",
+    color: "#f59e0b",
+    label: "Behind"
+  };
+  if (months >= 0.5) return {
+    tone: "slip",
+    color: "#f59e0b",
+    label: "Behind"
+  };
+  if (months > -0.5) return {
+    tone: "even",
+    color: "#3b82f6",
+    label: "Even"
+  };
+  if (months > -3) return {
+    tone: "pace",
+    color: "#3b82f6",
+    label: "Ahead"
+  };
+  return {
+    tone: "leader",
+    color: "#22c55e",
+    label: "Ahead"
+  };
+}
+function getDimLabel(v) {
+  if (v >= 80) return "Strong";
+  if (v >= 60) return "Solid";
+  if (v >= 40) return "Emerging";
+  if (v >= 25) return "Weak";
+  return "Absent";
+}
+function getDimColor(v) {
+  if (v >= 80) return "#22c55e";
+  if (v >= 60) return "#3b82f6";
+  if (v >= 40) return "#f59e0b";
+  if (v >= 25) return "#f97316";
+  return "#ef4444";
+}
+
+// ── Archetype classification ───────────────────────────────────────────────
+function classifyArchetype(dims, isSolo = false) {
+  const {
+    EXP,
+    DEP,
+    BRD,
+    DAT,
+    VEL,
+    overall
+  } = dims;
+  if (overall >= 80) return "leader";
+  if (VEL >= 65 && DAT >= 55 && DEP >= 55 && overall >= 60) return "builder";
+  if (DEP >= 60 && BRD < 50) return "pointsolver";
+  // "Everyone's using it, nobody's managing it" is incoherent for one person.
+  if (!isSolo && EXP >= 60 && BRD >= 55 && VEL < 45 && DAT < 55) return "shadowshop";
+  if (EXP >= 50 && BRD < 40 && DEP < 45 && VEL < 40) return "tinkerer";
+  if (overall < 35) return "spectator";
+  if (EXP >= 50 && DEP < 40) return "tinkerer";
+  if (DEP >= 50) return "pointsolver";
+  return "spectator";
+}
+const archetypes = {
+  spectator: {
+    title: "The Spectator",
+    plain: "Watching from the sidelines",
+    icon: "👀",
+    description: "You've heard about AI. Maybe tried ChatGPT once. But it hasn't entered your business in any real way. Right now, you're a spectator in a race that's already started.",
+    superpower: "You haven't wasted time on tools that don't work. You get to learn from every company that's already made the mistakes. Your fresh slate is an advantage if you move fast.",
+    shadow: "Every week you don't start, the compounding gap grows. Other operators are shipping real output. You're still reading about it.",
+    winning: "Clean foundation. No bad AI habits to unlearn.",
+    leaking: "Time, revenue, and competitive position. The top quartile in your industry is moving 3 to 5x faster than you on AI adoption.",
+    risk: "In 12 months, you won't be 'behind on AI.' You'll be structurally disadvantaged. Pricing, lead gen, and operations will all feel harder. You won't know why.",
+    actions: {
+      thirty: "Pick one function (sales, ops, or customer comms) and run 3 AI experiments. Even bad ones teach you fast.",
+      sixty: "Document what worked. Get one workflow producing consistent output with a real input and real output.",
+      ninety: "Hire or partner with someone who can drive this. You don't need to become the AI person. You need to own the outcome."
+    },
+    actionsSolo: {
+      ninety: "Put a recurring block on your calendar for AI work, or bring in an outside partner for a one-time build sprint. Consistency beats intensity at your size."
+    },
+    useCase: {
+      title: "Kill One Painful Task in 7 Days",
+      desc: "Pick the most hated manual task in your week. The one you dread. Build a simple AI workflow to remove it. Ship, don't perfect.",
+      roi: "The first win matters more than the best win. You need evidence AI works for your business, not someone else's."
+    }
+  },
+  tinkerer: {
+    title: "The Tinkerer",
+    plain: "ChatGPT is a tab, not a system",
+    icon: "🔧",
+    description: "You open ChatGPT daily. You've gotten good at prompting. But nothing you do with AI ever leaves your browser tab. No one else on the team benefits from what you figured out.",
+    superpower: "You know what AI can do because you use it. That's more than most owners. Your pattern recognition on quality is sharp.",
+    shadow: "Personal productivity tools don't scale. Your wins stay with you. The business doesn't compound.",
+    winning: "Your judgment about AI quality. You can spot a bad output fast.",
+    leaking: "Every hour of learning that doesn't become a shared prompt, a saved workflow, or a team process.",
+    risk: "You'll stay the AI person. The business stays dependent on you. When you take a day off, AI stops.",
+    actions: {
+      thirty: "Take your 3 most-used prompts. Document them. Hand them to one teammate and watch what happens.",
+      sixty: "Pick one recurring business task and turn it into a repeatable AI workflow with defined inputs and outputs.",
+      ninety: "Move 2 workflows out of your browser and into a tool the team actually uses daily."
+    },
+    actionsSolo: {
+      thirty: "Take your 3 most-used prompts and save them as named templates with defined inputs. Stop re-typing what you already solved.",
+      ninety: "Move 2 workflows out of your chat window and into automations that run on a trigger, not on your memory."
+    },
+    useCase: {
+      title: "Codify Your 3 Best Prompts Into a Team System",
+      desc: "Your best prompts are trapped in your chat history. Get them into a shared library with templates, inputs, and expected outputs. Then train one teammate to own each one.",
+      roi: "Turns your personal speed into team speed. Unlocks 5 to 10 hours/week across the team within 30 days."
+    }
+  },
+  shadowshop: {
+    title: "The Shadow Shop",
+    plain: "Everyone's using it. Nobody's managing it.",
+    icon: "🕶️",
+    description: "Your team is using AI. You probably don't know how much. They've figured out ChatGPT, Claude, maybe Midjourney. There are logins nobody's tracking and prompts nobody's reviewing. You have AI adoption without AI strategy.",
+    superpower: "The team doesn't need convincing. They already believe in the tools. That's the hardest part in most businesses and you're past it.",
+    shadow: "No governance means quality drift, data leakage, and wasted effort. Three people solving the same problem three different ways. No one compounding learnings.",
+    winning: "Organic adoption. Cultural openness. Speed of experimentation.",
+    leaking: "Consistency, compounding, and control. You don't own your AI stack. Your team does.",
+    risk: "An incident. Leaked client data in a prompt. A bad AI-generated message that goes to a customer. You'll learn about governance the expensive way.",
+    actions: {
+      thirty: "One-week AI audit. Who's using what, for what? Just capture it. No judgment, no policing.",
+      sixty: "Standardize. Pick the tools, build a shared prompt library, write a 1-page usage policy people will actually read.",
+      ninety: "Connect one workflow to a system instead of a person. Move from 'the team uses AI' to 'our systems use AI.'"
+    },
+    useCase: {
+      title: "AI Governance + Shared Prompt Library",
+      desc: "Map every tool in use today. Consolidate onto one or two platforms. Build a shared prompt library organized by role. Write a usage policy that protects client data without killing experimentation.",
+      roi: "Prevents the incident before it happens. Captures 10 to 20 hours/week of duplicated effort across the team."
+    }
+  },
+  pointsolver: {
+    title: "The Point-Solver",
+    plain: "One thing works. Nothing else moved.",
+    icon: "🎯",
+    description: "You nailed one AI use case. Maybe content generation. Maybe a customer response system. Maybe a specific internal tool. It works well. But the rest of the business looks like it did 2 years ago.",
+    superpower: "You know how to ship. You proved AI works in your business. That's real evidence most operators don't have.",
+    shadow: "One win can become a ceiling if you don't push the pattern. You treat the working system as the finish line instead of the first step.",
+    winning: "One workflow with real, measurable output. Team trust that AI can actually deliver.",
+    leaking: "5 to 8 other functions that could benefit from the same approach. You're playing offense in one area while the rest of the business plays defense.",
+    risk: "Competitors catch up on your one advantage. You lose the edge you built before you expand into new ones.",
+    actions: {
+      thirty: "Map 3 adjacent processes that could use the same pattern as your working system.",
+      sixty: "Apply the pattern to one of them. Treat the working system as the template, not the exception.",
+      ninety: "Ship the second system. Now you have a pattern that travels across the business."
+    },
+    actionsSolo: {
+      ninety: "Ship the second system, then write down the pattern you used. At your size, the reusable pattern is the asset, not the individual build."
+    },
+    useCase: {
+      title: "Port Your Working Pattern to Function #2",
+      desc: "The hard work is done. You have a proven AI workflow. The next move is taking the same architecture (inputs → AI step → outputs → human review) and applying it to the next highest-value function.",
+      roi: "Doubles your AI surface area in 60 days without doubling the effort. The second build is always faster than the first."
+    }
+  },
+  builder: {
+    title: "The Builder",
+    plain: "Shipping, but not yet dominant",
+    icon: "🏗️",
+    description: "You have an owner. You have a cadence. You have budget. You're building. You're not a leader yet, but you're not a spectator. You know what good looks like and you're moving toward it.",
+    superpower: "Velocity and systems thinking. You ship. That compounds.",
+    shadow: "It's easy to optimize what you already built and miss the leap. The move from builder to leader is about breadth of impact, not depth of current systems.",
+    winning: "Clear ownership. Shipping cadence. Budget that signals real commitment.",
+    leaking: "The last 2 to 3 functions you haven't touched. The unmeasured ROI on what you've built. The compounding you're not yet capturing.",
+    risk: "You stay a strong second or third. You'll notice when a competitor breaks ahead. By then, the gap is hard to close.",
+    actions: {
+      thirty: "Document ROI on what you've shipped. Real numbers. Hours saved, revenue gained, costs avoided.",
+      sixty: "Identify the 2 functions you haven't touched. Pick the bigger one.",
+      ninety: "Extend your stack across it. Now you're competing on systems, not just speed."
+    },
+    actionsSolo: {
+      thirty: "Document hours reclaimed per week on what you've shipped. At your size that number IS the ROI, and it decides what you build next."
+    },
+    useCase: {
+      title: "Fill the Last Untouched Function",
+      desc: "You've got a working AI stack in 3 to 4 functions. The gap is the 2 you've skipped. Usually it's the one with the messiest data or the most human-judgment. That's where the next unlock lives.",
+      roi: "Moves you from 'good at AI in specific places' to 'AI-native operator.' The gap closes to market leader tier in 90 days if you ship."
+    }
+  },
+  leader: {
+    title: "The Market Leader",
+    plain: "Playing offense while others play defense",
+    icon: "👑",
+    description: "You're not asking whether AI works. You're compounding advantages others haven't built yet. Your stack is integrated. Your team is fluent. Your systems run without you.",
+    superpower: "Compounding. Every week your position gets stronger, not weaker. You've flipped the drift in your favor.",
+    shadow: "Complacency. 'We're ahead' becomes 'we're done.' Leaders fall when they stop experimenting.",
+    winning: "Speed, integration, team fluency, data access.",
+    leaking: "Nothing obvious, which is the risk. Your edge can get invisible to you right before it erodes.",
+    risk: "Someone newer, nimbler, and more recently obsessed moves faster than you. You don't notice because they're not on your radar yet.",
+    actions: {
+      thirty: "Benchmark against companies 2 sizes up, not your current peers. That's where your next competition is.",
+      sixty: "Start a quarterly 'what would break us' review. Look at your stack from an attacker's perspective.",
+      ninety: "Invest in moats that compound: proprietary data, custom models, team fluency. The edge you have now is borrowed time."
+    },
+    useCase: {
+      title: "Build a Data Moat Competitors Can't Copy",
+      desc: "Off-the-shelf AI is everywhere. Your edge is proprietary data plus fine-tuned models plus team fluency. Start capturing data events today that nobody else in your industry has.",
+      roi: "Builds a moat that widens the longer you operate. In 12 months, a competitor would need 12 months of your data to match you."
+    }
+  }
+};
+
+// ── Role resolution + overlays ──────────────────────────────────────────────
+const ROLE_KEYS = ["owner", "teamlead", "exec", "teamlead"];
+function resolveRole(answers) {
+  if (answers.team_size === 0) return "solo";
+  let key = ROLE_KEYS[answers.role] ?? "owner";
+  // An owner at 51+ employees operates at exec altitude
+  if (key === "owner" && answers.team_size >= 3) key = "exec";
+  return key;
+}
+const roleOverlays = {
+  solo: {
+    label: "Solo operator",
+    lens: "You are the team. There's no adoption problem to manage. Every hour AI saves lands directly in your calendar or your margin.",
+    archetypeLines: {
+      tinkerer: "For a solo operator the Tinkerer trap is different: your prompts don't need to leave your browser. They need to become saved, reusable systems so you stop re-solving the same problem every week.",
+      pointsolver: "Solo, one working use case is a bigger deal than it sounds. You've proven the model. Now clone the pattern into your next-biggest time sink instead of perfecting the first one.",
+      spectator: "Solo, this is actually the fastest position to move from. No buy-in needed, no rollout, no training. One decision and you're in motion this week."
+    },
+    actions: {
+      thirty: "Solo lens: skip anything about training others. Spend the time templating your own top 3 recurring tasks.",
+      sixty: "Solo lens: your bottleneck is you. Build workflows that run without your attention, not tools that need it.",
+      ninety: "Solo lens: measure hours reclaimed per week. That's margin or capacity, and it's the only metric that matters at your size."
+    },
+    ctaLine: "We'll map your first build around a one-person operation. No enterprise theater."
+  },
+  owner: {
+    label: "Owner / operator",
+    lens: "You own the P&L and the decision. Nothing below needs approval from anyone. The only constraint is your own follow-through.",
+    archetypeLines: {
+      pointsolver: "As the owner, your one win is proof of concept for the whole operation. The next function you pick sets the pattern your team copies.",
+      tinkerer: "As the owner, your personal AI skill is currently trapped in your own browser. The business only compounds when it leaves your hands."
+    },
+    actions: {
+      thirty: "Owner lens: pick the workflow and name the owner out loud. Adoption dies in ambiguity.",
+      sixty: "Owner lens: put a small monthly budget line on this now. It forces the cadence conversation.",
+      ninety: "Owner lens: review hours-saved with your team like you review revenue. What gets inspected gets adopted."
+    },
+    ctaLine: "We'll map your first build against your P&L, not a feature list."
+  },
+  teamlead: {
+    label: "Team lead",
+    lens: "You don't control budget or mandate. Your leverage is proof. Everything below is framed as evidence you can bring upstairs.",
+    archetypeLines: {
+      shadowshop: "As the team lead, the ungoverned usage around you is your opening: document what's already happening, add light guardrails, and you become the person who turned chaos into a system.",
+      tinkerer: "As the team lead, your personal workflow is your pilot program. Document the hours saved for 30 days and you have a business case nobody can wave off."
+    },
+    actions: {
+      thirty: "Team-lead lens: track before/after hours on everything you touch. Numbers survive meetings; enthusiasm doesn't.",
+      sixty: "Team-lead lens: recruit one peer to replicate your win. Two teams beats one pilot in any budget conversation.",
+      ninety: "Team-lead lens: package the 90-day result as a one-page case and take it upstairs with a specific ask."
+    },
+    ctaLine: "We'll help you build the internal case, not just the workflow."
+  },
+  exec: {
+    label: "Executive",
+    lens: "At your scale the question isn't tools, it's operating model: governance, data access, and who owns the P&L impact.",
+    archetypeLines: {
+      spectator: "At your scale, watching isn't neutral. Your team is already using AI without policy, and your competitors are already compounding. The exposure is real on both fronts.",
+      shadowshop: "At your scale, ungoverned AI use is a data-security and brand-consistency exposure first, an efficiency story second. Governance before acceleration.",
+      builder: "At your scale, the risk is pockets of excellence: three teams sprinting, twelve standing still. Your job is the operating model that spreads it."
+    },
+    actions: {
+      thirty: "Exec lens: inventory actual AI usage across teams before mandating anything. You'll be surprised what's already running.",
+      sixty: "Exec lens: assign a single accountable owner with budget. Committees don't ship.",
+      ninety: "Exec lens: tie AI adoption to a P&L line in the next planning cycle, or it stays a side project."
+    },
+    ctaLine: "We'll talk operating model and governance, not tool demos."
+  }
+};
+
+// ── Top gaps derived from lowest dimensions ────────────────────────────────
+const dimensionGaps = {
+  EXP: {
+    title: "Exposure Gap",
+    icon: "👤",
+    detail: "Very few people on your team use AI in their actual day. AI only works when it's in the hands of the people doing the work, not a pilot program run by one person.",
+    hoursFrom: "3 to 6 hrs/week per person in avoidable manual work"
+  },
+  DEP: {
+    title: "Depth Gap",
+    icon: "🪜",
+    detail: "AI is helping with drafts and one-off tasks, but isn't embedded in a workflow that runs without you. Point tools don't compound. Systems do.",
+    hoursFrom: "10 to 20 hrs/week of repeated work that a workflow could handle"
+  },
+  BRD: {
+    title: "Breadth Gap",
+    icon: "🗺️",
+    detail: "Most of your business functions haven't been touched by AI. That's 60 to 80% of your cost base running at 2023 speeds while the market moves.",
+    hoursFrom: "Function by function, this is your single biggest leak"
+  },
+  DAT: {
+    title: "Data Gap",
+    icon: "🧩",
+    detail: "Your systems don't talk to each other enough for AI to actually help. AI is only as smart as the data it can reach. Right now, it can't reach most of yours.",
+    hoursFrom: "Unknown opportunity cost, but it's the gate for everything else"
+  },
+  VEL: {
+    title: "Velocity Gap",
+    icon: "🚴",
+    detail: "Nobody owns AI adoption and nothing ships on a regular cadence. Without an owner and a rhythm, every quarter looks like the last one.",
+    hoursFrom: "Every month of no movement = 0.06 points of ratio lost"
+  }
+};
+function getTopGaps(dims) {
+  const entries = [["EXP", dims.EXP], ["DEP", dims.DEP], ["BRD", dims.BRD], ["DAT", dims.DAT], ["VEL", dims.VEL]];
+  entries.sort((a, b) => a[1] - b[1]);
+  return entries.slice(0, 3).map(([k, v]) => ({
+    key: k,
+    score: v,
+    ...dimensionGaps[k]
+  }));
+}
+
+// ── Reflect-back content, index-aligned with question options ──────────────
+// constraintReflections[i] pairs with questions[id:"constraint"].options[i]
+const constraintReflections = [{
+  label: "Don't know where to start",
+  reframe: "Not knowing where to start is the starting point. Your first build should be picked for learning speed, not maximum ROI. Small, visible, done in a week.",
+  firstMove: "Pick the time drain you named below. That's your starting line. One task, seven days."
+}, {
+  label: "No time to implement",
+  reframe: "The no-time loop is the trap: the tasks eating your week are the exact tasks AI would take off your plate. You're too busy bailing water to fix the leak.",
+  firstMove: "Block 90 minutes once. That's enough to set up one workflow that pays the time back weekly."
+}, {
+  label: "Nobody on the team is technical enough",
+  reframe: "The 2026 tools don't need technical people. They need someone who knows the process cold. Your best operator is more qualified than a developer here.",
+  firstMove: "Hand your most process-obsessed person one workflow and one tool. Judge results in two weeks."
+}, {
+  label: "Our data is a mess",
+  reframe: "Messy data blocks maybe a third of AI use cases. Drafting, responding, summarizing, and scheduling don't need clean data. Start there while you clean up.",
+  firstMove: "Ship one no-data-needed win now. Clean one system (usually the CRM) in parallel."
+}, {
+  label: "Team resistance or skepticism",
+  reframe: "Resistance is almost never about AI. It's about being told to change without being shown the payoff. One teammate saving 5 hours a week converts better than any mandate.",
+  firstMove: "Find your one curious person. Give them a win. Let the team hear it from them, not you."
+}, {
+  label: "Tried before, didn't stick",
+  reframe: "It didn't stick because it was a tool, not a system. Tools rely on willpower. Systems run inside a process that already happens. The retry needs an owner and a trigger.",
+  firstMove: "Rebuild the single best past attempt, but bolt it to an existing routine so it can't be skipped."
+}, {
+  label: "Budget",
+  reframe: "The starting stack costs less than one lunch meeting a month. The expensive part of AI adoption is delay, not tooling. Budget is the objection, hours are the cost.",
+  firstMove: "Start with one $20-30/month tool aimed at the time drain below. Prove ROI before spending more."
+}];
+
+// painReflections[i] pairs with questions[id:"biggest_pain"].options[i]
+const painReflections = [{
+  label: "Customer communication and response time",
+  short: "customer comms",
+  aiAngle: "Response drafting and inbox triage is the single most proven SMB use case. This is a solved problem you haven't installed yet.",
+  quickWin: "An AI-drafted first response on every inbound message, human-reviewed before send. Live in a week, and response time drops from hours to minutes."
+}, {
+  label: "Admin work, data entry, and paperwork",
+  short: "admin and paperwork",
+  aiAngle: "Admin is the highest-volume, lowest-judgment work in your business. That's exactly the profile AI eats first.",
+  quickWin: "Pick your single most repeated document or data-entry task and template it with AI. Most operators reclaim 4-8 hours a week from that one move."
+}, {
+  label: "Lead generation and follow-up",
+  short: "lead gen and follow-up",
+  aiAngle: "Most lead leakage isn't a volume problem, it's a follow-up-speed problem. AI closes the gap between inquiry and first touch.",
+  quickWin: "Automated, personalized follow-up within 5 minutes of every inquiry. Speed-to-lead is the highest-leverage sales fix on the board."
+}, {
+  label: "Scheduling and operations coordination",
+  short: "scheduling and ops",
+  aiAngle: "Coordination overhead scales with headcount, but the actual decisions are rule-based. AI plus a shared source of truth kills the back-and-forth.",
+  quickWin: "One AI-managed scheduling flow (booking, reminders, rescheduling) that removes the ping-pong. That's usually 30-60 minutes a day back."
+}, {
+  label: "Managing team output and accountability",
+  short: "team output visibility",
+  aiAngle: "You can't manage what you re-ask about. AI turns scattered updates into one standing brief so accountability stops depending on your follow-ups.",
+  quickWin: "An automated end-of-day roll-up from your existing tools into one summary. You stop chasing status and start reading it."
+}, {
+  label: "Reporting and visibility into the business",
+  short: "reporting and visibility",
+  aiAngle: "Reporting pain is really a data-access pain. Once AI can query your numbers, the weekly scramble becomes a standing question it answers.",
+  quickWin: "One auto-generated weekly scorecard with the 5 numbers you actually run the business on. Built once, delivered every Monday."
+}];
+
+// ── Storage helpers ────────────────────────────────────────────────────────
+function getStorage() {
+  if (typeof window !== "undefined" && window.storage) return window.storage;
+  return null;
+}
+function saveRetake(email, currentRatio, industryIdx, archetypeKey) {
+  const storage = getStorage();
+  if (!storage) return;
+  const today = new Date();
+  const retake = new Date(today.getTime() + 90 * 24 * 60 * 60 * 1000);
+  const payload = {
+    email,
+    currentRatio,
+    assessmentDate: today.toISOString(),
+    retakeDate: retake.toISOString(),
+    industry: industryIdx,
+    archetype: archetypeKey
+  };
+  try {
+    storage.setItem(`retake-reminders:${email}`, JSON.stringify(payload));
+  } catch (e) {}
+}
+const LEAD_WEBHOOK = ""; // Zapier/Resend/Make endpoint. Empty = local storage only.
+
+function saveLead(email, data) {
+  const payload = {
+    email,
+    assessmentDate: new Date().toISOString(),
+    source: "ai-adaptation-ratio-assessment",
+    ...data
+  };
+  const storage = getStorage();
+  if (storage) {
+    try {
+      storage.setItem(`assessment-leads:${email}`, JSON.stringify(payload));
+    } catch (e) {}
+  }
+  if (LEAD_WEBHOOK) {
+    try {
+      fetch(LEAD_WEBHOOK, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload),
+        keepalive: true
+      }).catch(() => {});
+    } catch (e) {}
+  }
+}
+function findPriorRetake(email) {
+  const storage = getStorage();
+  if (!storage || !email) return null;
+  try {
+    const raw = storage.getItem(`retake-reminders:${email}`);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch (e) {
+    return null;
+  }
+}
+
+// ── Components ──────────────────────────────────────────────────────────────
+
+function IntentScreen({
+  onPick
+}) {
+  useEffect(() => {
+    const onKey = e => {
+      const n = Number(e.key);
+      if (n >= 1 && n <= INTENTS.length) {
+        e.preventDefault();
+        onPick(n - 1);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onPick]);
+  return /*#__PURE__*/React.createElement("div", {
+    style: styles.landingWrap
+  }, /*#__PURE__*/React.createElement("div", {
+    style: styles.freeBadge
+  }, "FREE"), /*#__PURE__*/React.createElement("div", {
+    style: styles.pillarLabel
+  }, "BEFORE QUESTION 1"), /*#__PURE__*/React.createElement("h1", {
+    style: {
+      ...styles.landingTitle,
+      fontSize: 26
+    }
+  }, "What made you check?"), /*#__PURE__*/React.createElement("p", {
+    style: styles.landingSubtitle
+  }, "One tap. It shapes how we read your results."), /*#__PURE__*/React.createElement("div", {
+    style: styles.optionsList
+  }, INTENTS.map((it, i) => /*#__PURE__*/React.createElement("button", {
+    key: i,
+    style: styles.optionBtn,
+    onClick: () => onPick(i)
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontWeight: 700,
+      color: "#94a3b8",
+      marginRight: 4
+    }
+  }, i + 1), /*#__PURE__*/React.createElement("span", null, /*#__PURE__*/React.createElement("span", {
+    style: {
+      display: "block",
+      fontWeight: 700
+    }
+  }, it.label), /*#__PURE__*/React.createElement("span", {
+    style: {
+      display: "block",
+      fontSize: 12,
+      color: "#717171",
+      marginTop: 2
+    }
+  }, it.sub))))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      textAlign: "center"
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    style: styles.modalClose,
+    onClick: () => onPick(null)
+  }, "Skip →")));
+}
+
+// Needle visible, number hidden: the ratio forms in front of them but can't be
+// read (or gamed) until the reveal.
+function RatioDial({
+  answers,
+  isSolo
+}) {
+  const dims = scoreDimensions(answers, isSolo);
+  const ratio = Math.min(1.5, dims.overall / MARKET_BASELINE);
+  const angle = -90 + ratio / 1.5 * 180;
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 8
+    }
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "44",
+    height: "27",
+    viewBox: "0 0 44 27",
+    "aria-hidden": "true"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M4,24 A18,18 0 0 1 40,24",
+    fill: "none",
+    stroke: "#e2e8f0",
+    strokeWidth: "4",
+    strokeLinecap: "round"
+  }), /*#__PURE__*/React.createElement("line", {
+    x1: "22",
+    y1: "24",
+    x2: "22",
+    y2: "9",
+    stroke: BRAND_ORANGE,
+    strokeWidth: "2.5",
+    strokeLinecap: "round",
+    style: {
+      transform: `rotate(${angle}deg)`,
+      transformOrigin: "22px 24px",
+      transition: "transform 0.6s ease"
+    }
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "22",
+    cy: "24",
+    r: "3",
+    fill: BRAND_ORANGE
+  })), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 9,
+      fontWeight: 700,
+      letterSpacing: 1.2,
+      color: "#94a3b8",
+      textTransform: "uppercase"
+    }
+  }, "Ratio forming"));
+}
+
+// Milestone open loops: a one-line partial read at two points mid-quiz,
+// derived from actual answers, never generic.
+function partialRead(answers, qid) {
+  if (qid === "impact") {
+    const exp = answers.exposure;
+    const dep = answers.depth;
+    if (exp === undefined || dep === undefined) return null;
+    if (exp >= 2 && dep <= 1) return "Early read: you use AI more than it works for you. The next questions find where the hours are.";
+    if (exp <= 1) return "Early read: usage is the first gap. It's also the fastest one to close.";
+    return "Early read: real usage is there. Now we find out how deep it goes.";
+  }
+  if (qid === "ownership") {
+    const dc = answers.data_connected;
+    const da = answers.data_accessibility;
+    if (dc === undefined || da === undefined) return null;
+    if (dc <= 1 && da <= 1) return "Mid read: your tools aren't talking to each other. That caps everything else. Four questions left.";
+    if (dc >= 3 || da >= 3) return "Mid read: your data layer is ahead of most businesses your size. Four questions left.";
+    return "Mid read: your data layer is workable. The last questions decide the score. Four to go.";
+  }
+  return null;
+}
+
+// Guess before the reveal: prediction turns a score into a bet.
+function GuessScreen({
+  onSubmit
+}) {
+  const [guess, setGuess] = useState(1.0);
+  const tier = getRatioTier(guess);
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      justifyContent: "center"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: styles.gateCard
+  }, /*#__PURE__*/React.createElement("div", {
+    style: styles.gateBadge
+  }, "BEFORE YOUR SCORE"), /*#__PURE__*/React.createElement("h2", {
+    style: styles.gateTitle
+  }, "Where do you think you land?"), /*#__PURE__*/React.createElement("p", {
+    style: styles.gateSub
+  }, "1.00 is matching the market's pace. The benchmark average is 0.62. Lock in a guess; we'll show you how close you were."), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 48,
+      fontWeight: 800,
+      color: BRAND_ORANGE,
+      lineHeight: 1,
+      margin: "10px 0 4px"
+    }
+  }, guess.toFixed(2)), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      fontWeight: 700,
+      letterSpacing: 1,
+      textTransform: "uppercase",
+      color: tier.color,
+      marginBottom: 10
+    }
+  }, tier.label), /*#__PURE__*/React.createElement("input", {
+    type: "range",
+    min: "0",
+    max: "2",
+    step: "0.05",
+    value: guess,
+    onChange: e => setGuess(+e.target.value),
+    style: {
+      width: "100%",
+      margin: "8px 0 6px",
+      accentColor: BRAND_ORANGE
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      justifyContent: "space-between",
+      fontSize: 10,
+      color: "#94a3b8",
+      marginBottom: 18
+    }
+  }, /*#__PURE__*/React.createElement("span", null, "0.00 · Way behind"), /*#__PURE__*/React.createElement("span", null, "1.00 · Market pace"), /*#__PURE__*/React.createElement("span", null, "2.00 · Way ahead")), /*#__PURE__*/React.createElement("button", {
+    style: styles.modalBtn,
+    onClick: () => onSubmit(guess)
+  }, "Lock It In → Show My Score"), /*#__PURE__*/React.createElement("button", {
+    style: styles.modalClose,
+    onClick: () => onSubmit(null)
+  }, "Skip the guess →")));
+}
+
+// Guess vs. reality: the most personal stat on the page.
+function GuessDelta({
+  guess,
+  ratio
+}) {
+  if (guess === null || guess === undefined) return null;
+  const diff = +(ratio - guess).toFixed(2);
+  const off = Math.abs(diff);
+  let line;
+  if (off <= 0.1) {
+    line = "You called it almost exactly. Rare. The report below tells you what to do with that self-awareness.";
+  } else if (diff < 0) {
+    line = "That gap between how it feels and where you actually are is where businesses quietly fall behind.";
+  } else {
+    line = "Your instinct undersells you. The report below shows where the real edge is.";
+  }
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: "linear-gradient(135deg, rgba(232,84,26,0.08), rgba(232,84,26,0.02))",
+      border: "1px solid rgba(232,84,26,0.35)",
+      borderRadius: 16,
+      padding: "16px 18px",
+      textAlign: "center"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      fontWeight: 800,
+      letterSpacing: 1.5,
+      textTransform: "uppercase",
+      color: "#717171",
+      marginBottom: 6
+    }
+  }, "Your guess: ", guess.toFixed(2), " · Reality: ", ratio.toFixed(2)), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 14,
+      color: "#3d3d3d",
+      lineHeight: 1.5
+    }
+  }, "You were off by ", /*#__PURE__*/React.createElement("b", {
+    style: {
+      color: BRAND_ORANGE
+    }
+  }, off.toFixed(2)), ". ", line));
+}
+function QuestionCard({
+  q,
+  index,
+  total,
+  answer,
+  onAnswer,
+  onNext,
+  onBack,
+  answers,
+  isSolo
+}) {
+  const progress = index / total * 100;
+  const readLine = partialRead(answers, q.id);
+  return /*#__PURE__*/React.createElement("div", {
+    style: styles.card
+  }, /*#__PURE__*/React.createElement("div", {
+    style: styles.qHeader
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", {
+    style: styles.qLabel
+  }, "Question ", index + 1, " of ", total)), /*#__PURE__*/React.createElement(RatioDial, {
+    answers: answers,
+    isSolo: isSolo
+  }), /*#__PURE__*/React.createElement("span", {
+    style: styles.qTimer
+  }, "⏱ ~", Math.max(1, Math.ceil((total - index) * 0.25)), " min left")), /*#__PURE__*/React.createElement("div", {
+    style: styles.progressBar
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      ...styles.progressFill,
+      width: `${progress}%`
+    }
+  })), readLine && /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: "#FFF3EE",
+      border: "1px solid rgba(232,84,26,0.25)",
+      borderRadius: 10,
+      padding: "10px 14px",
+      fontSize: 13,
+      fontWeight: 500,
+      color: "#7c2d12",
+      marginBottom: 16,
+      lineHeight: 1.45
+    }
+  }, readLine), /*#__PURE__*/React.createElement("h2", {
+    style: styles.qText
+  }, q.question), q.subtext && /*#__PURE__*/React.createElement("p", {
+    style: styles.qSubtext
+  }, q.subtext), /*#__PURE__*/React.createElement("div", {
+    style: styles.optionsList
+  }, q.options.map((opt, i) => {
+    const isMulti = q.type === "multi";
+    const selected = isMulti ? (answer || []).includes(i) : answer === i;
+    return /*#__PURE__*/React.createElement("button", {
+      key: i,
+      style: {
+        ...styles.optionBtn,
+        ...(selected ? styles.optionBtnSelected : {})
+      },
+      onClick: () => {
+        if (isMulti) {
+          const prev = answer || [];
+          const next = prev.includes(i) ? prev.filter(x => x !== i) : [...prev, i];
+          onAnswer(next);
+        } else {
+          onAnswer(i);
+        }
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        ...styles.optionRadio,
+        ...(selected ? styles.optionRadioSelected : {})
+      }
+    }, selected && /*#__PURE__*/React.createElement("span", {
+      style: styles.optionRadioDot
+    })), opt);
+  })), /*#__PURE__*/React.createElement("div", {
+    style: styles.navRow
+  }, index > 0 && /*#__PURE__*/React.createElement("button", {
+    style: styles.backBtn,
+    onClick: onBack
+  }, "← Back"), /*#__PURE__*/React.createElement("button", {
+    style: {
+      ...styles.nextBtn,
+      marginLeft: "auto",
+      opacity: answer === undefined || Array.isArray(answer) && answer.length === 0 ? 0.4 : 1
+    },
+    onClick: onNext,
+    disabled: answer === undefined || Array.isArray(answer) && answer.length === 0
+  }, index === total - 1 ? "Continue →" : "Next →")));
+}
+
+// Inline gate: the headline number already showed free. This unlocks the rest
+// of the report and triggers the emailed copy.
+function UnlockCard({
+  onUnlock,
+  industryName
+}) {
+  const [email, setEmail] = useState("");
+  const [touched, setTouched] = useState(false);
+  const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const lockedSections = ["Your 5 sub-scores, ranked", "Your AI adoption archetype (superpower and shadow)", `How you compare in ${industryName}`, "Your top 3 gaps, with the hours behind each", "Your 30 / 60 / 90 action map", "Your #1 recommended move"];
+  function handleSubmit(e) {
+    e.preventDefault();
+    setTouched(true);
+    if (!valid) return;
+    onUnlock(email.trim().toLowerCase());
+  }
+
+  // Until the leads endpoint is deployed, the page can't send anything, so it
+  // doesn't promise to. Setting LEAD_WEBHOOK turns the email promise back on.
+  const canEmail = Boolean(LEAD_WEBHOOK);
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      justifyContent: "center"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      ...styles.gateCard,
+      maxWidth: 520
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: styles.gateBadge
+  }, "THE FULL REPORT"), /*#__PURE__*/React.createElement("h2", {
+    style: styles.gateTitle
+  }, "That number has a why."), /*#__PURE__*/React.createElement("p", {
+    style: styles.gateSub
+  }, canEmail ? "The rest of the report explains it and tells you what to fix first. We email you a copy so you can re-score in 90 days." : "The rest of the report explains it and tells you what to fix first. It opens right here."), /*#__PURE__*/React.createElement("div", {
+    style: {
+      textAlign: "left",
+      margin: "4px 0 16px"
+    }
+  }, lockedSections.map((s, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 8,
+      padding: "7px 0",
+      borderBottom: i < lockedSections.length - 1 ? "1px solid rgba(17,17,17,0.06)" : "none",
+      fontSize: 13,
+      color: "#3d3d3d"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 12
+    }
+  }, "🔒"), /*#__PURE__*/React.createElement("span", null, s)))), /*#__PURE__*/React.createElement("form", {
+    onSubmit: handleSubmit,
+    noValidate: true
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "email",
+    value: email,
+    onChange: e => setEmail(e.target.value),
+    onBlur: () => setTouched(true),
+    placeholder: "you@yourbusiness.com",
+    style: {
+      ...styles.modalInput,
+      borderColor: touched && !valid ? "#ef4444" : "rgba(17,17,17,0.15)",
+      marginBottom: touched && !valid ? 6 : 14
+    },
+    required: true
+  }), touched && !valid && /*#__PURE__*/React.createElement("div", {
+    style: styles.gateError
+  }, "Enter a valid email to continue."), /*#__PURE__*/React.createElement("button", {
+    type: "submit",
+    style: {
+      ...styles.modalBtn,
+      opacity: valid ? 1 : 0.5
+    }
+  }, canEmail ? "Send Me the Full Report →" : "Open the Full Report →")), /*#__PURE__*/React.createElement("div", {
+    style: styles.gateMetaRow
+  }, /*#__PURE__*/React.createElement("span", null, canEmail ? "✓ One email with your report" : "✓ No spam, ever"), /*#__PURE__*/React.createElement("span", null, "✓ Unsubscribe in one click"))));
+}
+function LoadingScreen() {
+  const [progress, setProgress] = useState(0);
+  const [msg, setMsg] = useState("Analyzing your business profile...");
+  const messages = ["Analyzing your business profile...", "Scoring 6 dimensions of AI adoption...", "Classifying your adoption archetype...", "Pulling industry benchmarks...", "Building your 30/60/90 action map..."];
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setProgress(p => Math.min(p + 2, 95));
+    }, 90);
+    const msgInterval = setInterval(() => {
+      setMsg(prev => {
+        const idx = messages.indexOf(prev);
+        return messages[(idx + 1) % messages.length];
+      });
+    }, 1200);
+    return () => {
+      clearInterval(interval);
+      clearInterval(msgInterval);
+    };
+  }, []);
+  return /*#__PURE__*/React.createElement("div", {
+    style: styles.loadingWrap
+  }, /*#__PURE__*/React.createElement("div", {
+    style: styles.loadingSpinner
+  }), /*#__PURE__*/React.createElement("p", {
+    style: styles.loadingMsg
+  }, msg), /*#__PURE__*/React.createElement("div", {
+    style: styles.loadingBarWrap
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      ...styles.loadingBarFill,
+      width: `${progress}%`
+    }
+  })), /*#__PURE__*/React.createElement("p", {
+    style: styles.loadingPct
+  }, progress, "%"));
+}
+
+// ── Market Drift Visual ────────────────────────────────────────────────────
+function MarketDrift({
+  userRatio
+}) {
+  const [marketRatio, setMarketRatio] = useState(1.00);
+  const [drift, setDrift] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => {
+      setMarketRatio(m => {
+        if (m >= MARKET_DRIFT_CAP) return m;
+        return +(m + 0.01).toFixed(2);
+      });
+      setDrift(d => +(d + 0.01).toFixed(2));
+    }, 3000);
+    return () => clearInterval(id);
+  }, []);
+  const TRACK_MIN = 0.0;
+  const TRACK_MAX = 2.0;
+  const pct = v => `${Math.max(0, Math.min(100, (v - TRACK_MIN) / (TRACK_MAX - TRACK_MIN) * 100))}%`;
+  return /*#__PURE__*/React.createElement("div", {
+    style: styles.driftWrap
+  }, /*#__PURE__*/React.createElement("h3", {
+    style: styles.sectionTitle
+  }, "You vs. The Market"), /*#__PURE__*/React.createElement("div", {
+    style: styles.driftTrackOuter
+  }, [0.5, 1.0, 1.5].map(t => /*#__PURE__*/React.createElement("div", {
+    key: t,
+    style: {
+      ...styles.tickMark,
+      left: pct(t)
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: styles.tickLabel
+  }, t.toFixed(1)))), /*#__PURE__*/React.createElement("div", {
+    style: styles.driftTrack
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      ...styles.driftDotWrap,
+      left: pct(userRatio)
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: styles.driftLabelTop
+  }, "You"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      ...styles.driftDot,
+      background: "#3b82f6",
+      boxShadow: "0 0 14px rgba(59,130,246,0.8)"
+    }
+  }), /*#__PURE__*/React.createElement("span", {
+    style: styles.driftValue
+  }, userRatio.toFixed(2))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      ...styles.driftDotWrap,
+      left: pct(marketRatio),
+      transition: "left 2.8s linear"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: styles.driftLabelTop
+  }, "Market"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      ...styles.driftDot,
+      background: "#22c55e",
+      boxShadow: "0 0 14px rgba(34,197,94,0.8)"
+    }
+  }), /*#__PURE__*/React.createElement("span", {
+    style: styles.driftValue
+  }, marketRatio.toFixed(2)))), /*#__PURE__*/React.createElement("p", {
+    style: styles.driftCounter
+  }, "The market has moved ", /*#__PURE__*/React.createElement("strong", {
+    style: {
+      color: "#22c55e"
+    }
+  }, drift.toFixed(2)), " points since you started this assessment."));
+}
+
+// ── Trajectory Chart (you vs. market over 12 months) ──────────────────────
+function TrajectoryChart({
+  userRatio
+}) {
+  const [revealed, setRevealed] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => {
+      setRevealed(v => {
+        if (v >= 1) {
+          clearInterval(id);
+          return 1;
+        }
+        return +(v + 0.04).toFixed(2);
+      });
+    }, 40);
+    return () => clearInterval(id);
+  }, []);
+  const W = 520;
+  const H = 240;
+  const PADL = 44,
+    PADR = 16,
+    PADT = 24,
+    PADB = 34;
+  const chartW = W - PADL - PADR;
+  const chartH = H - PADT - PADB;
+  const months = [0, 3, 6, 9, 12];
+  const marketValues = months.map(m => 1.00 + m * DRIFT_PER_MONTH);
+  const userValues = months.map(() => userRatio);
+  const yMin = Math.min(0.4, userRatio - 0.1);
+  const yMax = Math.max(...marketValues, 1.8);
+  const xPos = m => PADL + m / 12 * chartW;
+  const yPos = v => PADT + chartH - (v - yMin) / (yMax - yMin) * chartH;
+  const revealX = PADL + revealed * chartW;
+  const marketPath = months.map((m, i) => `${i === 0 ? "M" : "L"} ${xPos(m)} ${yPos(marketValues[i])}`).join(" ");
+  const userPath = months.map((m, i) => `${i === 0 ? "M" : "L"} ${xPos(m)} ${yPos(userValues[i])}`).join(" ");
+  const gapPath = [`M ${xPos(0)} ${yPos(userRatio)}`, ...months.map(m => `L ${xPos(m)} ${yPos(marketValues[months.indexOf(m)])}`), `L ${xPos(12)} ${yPos(userRatio)}`, "Z"].join(" ");
+  const monthsNow = computeMonthsBehind(userRatio);
+  const monthsEnd = +((marketValues[months.length - 1] - userRatio) / DRIFT_PER_MONTH).toFixed(1);
+  return /*#__PURE__*/React.createElement("div", {
+    style: styles.driftWrap
+  }, /*#__PURE__*/React.createElement("h3", {
+    style: styles.sectionTitle
+  }, "The Gap, Projected Forward"), /*#__PURE__*/React.createElement("p", {
+    style: styles.trajSub
+  }, "If you stay where you are, this is what happens. The market keeps moving. You don't."), /*#__PURE__*/React.createElement("div", {
+    style: styles.trajChartWrap
+  }, /*#__PURE__*/React.createElement("svg", {
+    viewBox: `0 0 ${W} ${H}`,
+    style: {
+      width: "100%",
+      height: "auto",
+      display: "block"
+    }
+  }, /*#__PURE__*/React.createElement("defs", null, /*#__PURE__*/React.createElement("linearGradient", {
+    id: "gapGrad",
+    x1: "0",
+    x2: "1",
+    y1: "0",
+    y2: "0"
+  }, /*#__PURE__*/React.createElement("stop", {
+    offset: "0%",
+    stopColor: "#ef4444",
+    stopOpacity: "0.1"
+  }), /*#__PURE__*/React.createElement("stop", {
+    offset: "100%",
+    stopColor: "#ef4444",
+    stopOpacity: "0.5"
+  })), /*#__PURE__*/React.createElement("clipPath", {
+    id: "reveal"
+  }, /*#__PURE__*/React.createElement("rect", {
+    x: PADL,
+    y: 0,
+    width: revealX - PADL,
+    height: H
+  }))), [yMin, (yMin + yMax) / 2, yMax].map((v, i) => /*#__PURE__*/React.createElement("g", {
+    key: i
+  }, /*#__PURE__*/React.createElement("line", {
+    x1: PADL,
+    x2: W - PADR,
+    y1: yPos(v),
+    y2: yPos(v),
+    stroke: "#1e293b",
+    strokeWidth: "1",
+    strokeDasharray: "2 4"
+  }), /*#__PURE__*/React.createElement("text", {
+    x: PADL - 8,
+    y: yPos(v) + 3,
+    fill: "#475569",
+    fontSize: "10",
+    textAnchor: "end",
+    fontFamily: "'DM Mono', monospace"
+  }, v.toFixed(2)))), months.map((m, i) => /*#__PURE__*/React.createElement("g", {
+    key: i
+  }, /*#__PURE__*/React.createElement("text", {
+    x: xPos(m),
+    y: H - PADB + 18,
+    fill: "#64748b",
+    fontSize: "10",
+    textAnchor: "middle",
+    fontWeight: "600"
+  }, m === 0 ? "Today" : `+${m}mo`))), /*#__PURE__*/React.createElement("g", {
+    clipPath: "url(#reveal)"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: gapPath,
+    fill: "url(#gapGrad)"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: marketPath,
+    fill: "none",
+    stroke: "#22c55e",
+    strokeWidth: "2.5",
+    strokeLinecap: "round"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: userPath,
+    fill: "none",
+    stroke: "#3b82f6",
+    strokeWidth: "2.5",
+    strokeLinecap: "round",
+    strokeDasharray: "0"
+  }), months.map((m, i) => /*#__PURE__*/React.createElement("g", {
+    key: i
+  }, /*#__PURE__*/React.createElement("circle", {
+    cx: xPos(m),
+    cy: yPos(marketValues[i]),
+    r: "4",
+    fill: "#22c55e"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: xPos(m),
+    cy: yPos(userValues[i]),
+    r: "4",
+    fill: "#3b82f6"
+  })))), /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("text", {
+    x: xPos(12) - 4,
+    y: yPos(marketValues[4]) - 10,
+    fill: "#22c55e",
+    fontSize: "11",
+    textAnchor: "end",
+    fontWeight: "800"
+  }, "MARKET"), /*#__PURE__*/React.createElement("text", {
+    x: xPos(12) - 4,
+    y: yPos(userRatio) + 18,
+    fill: "#3b82f6",
+    fontSize: "11",
+    textAnchor: "end",
+    fontWeight: "800"
+  }, "YOU")))), /*#__PURE__*/React.createElement("div", {
+    style: styles.trajStatsRow
+  }, /*#__PURE__*/React.createElement("div", {
+    style: styles.trajStat
+  }, /*#__PURE__*/React.createElement("div", {
+    style: styles.trajStatLabel
+  }, "Gap today"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      ...styles.trajStatValue,
+      color: getMonthsFrame(monthsNow).color
+    }
+  }, monthsNow >= 0 ? `${monthsNow.toFixed(1)} mo behind` : `${Math.abs(monthsNow).toFixed(1)} mo ahead`)), /*#__PURE__*/React.createElement("div", {
+    style: styles.trajStat
+  }, /*#__PURE__*/React.createElement("div", {
+    style: styles.trajStatLabel
+  }, "Gap in 12 mo"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      ...styles.trajStatValue,
+      color: monthsEnd >= 6 ? "#ef4444" : monthsEnd >= 3 ? "#f59e0b" : "#22c55e"
+    }
+  }, monthsEnd >= 0 ? `${monthsEnd.toFixed(1)} mo behind` : `${Math.abs(monthsEnd).toFixed(1)} mo ahead`))));
+}
+
+// ── Gap-Double Countdown ───────────────────────────────────────────────────
+function GapDoubleCountdown({
+  userRatio
+}) {
+  const months = computeMonthsBehind(userRatio);
+  if (months <= 0.5) {
+    return /*#__PURE__*/React.createElement("div", {
+      style: {
+        ...styles.countdownCard,
+        borderColor: "rgba(34,197,94,0.4)"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: styles.countdownIcon
+    }, "🏁"), /*#__PURE__*/React.createElement("div", {
+      style: styles.countdownTextBlock
+    }, /*#__PURE__*/React.createElement("div", {
+      style: styles.countdownLabel
+    }, "At current pace"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        ...styles.countdownValue,
+        color: "#22c55e"
+      }
+    }, "You're keeping up. The leaders pull away in 90 days if you stop moving.")));
+  }
+  const daysToDouble = Math.round(months * 30);
+  return /*#__PURE__*/React.createElement("div", {
+    style: styles.countdownCard
+  }, /*#__PURE__*/React.createElement("div", {
+    style: styles.countdownIcon
+  }, "⏳"), /*#__PURE__*/React.createElement("div", {
+    style: styles.countdownTextBlock
+  }, /*#__PURE__*/React.createElement("div", {
+    style: styles.countdownLabel
+  }, "If nothing changes"), /*#__PURE__*/React.createElement("div", {
+    style: styles.countdownValue
+  }, "Your gap doubles in ", /*#__PURE__*/React.createElement("strong", {
+    style: {
+      color: "#ef4444"
+    }
+  }, daysToDouble, " days")), /*#__PURE__*/React.createElement("div", {
+    style: styles.countdownSub
+  }, "From ", months.toFixed(1), " months behind to ", (months * 2).toFixed(1), " months behind.")));
+}
+
+// ── Sub-Score Bars ─────────────────────────────────────────────────────────
+function SubScoreBars({
+  dims
+}) {
+  const rows = [{
+    key: "EXP",
+    label: "Exposure",
+    detail: "Who on the team actually uses AI",
+    value: dims.EXP
+  }, {
+    key: "DEP",
+    label: "Depth",
+    detail: "Ad hoc vs. embedded in workflows",
+    value: dims.DEP
+  }, {
+    key: "BRD",
+    label: "Breadth",
+    detail: "How many functions AI touches",
+    value: dims.BRD
+  }, {
+    key: "DAT",
+    label: "Data + Systems",
+    detail: "Can AI reach your data",
+    value: dims.DAT
+  }, {
+    key: "VEL",
+    label: "Velocity + Ownership",
+    detail: "Who drives it, how fast you ship",
+    value: dims.VEL
+  }];
+  return /*#__PURE__*/React.createElement("div", {
+    style: styles.section
+  }, /*#__PURE__*/React.createElement("h3", {
+    style: styles.sectionTitle
+  }, "Your 5 Sub-Scores"), /*#__PURE__*/React.createElement("div", {
+    style: styles.subScoreCard
+  }, rows.map(r => {
+    const color = getDimColor(r.value);
+    return /*#__PURE__*/React.createElement("div", {
+      key: r.key,
+      style: styles.subRow
+    }, /*#__PURE__*/React.createElement("div", {
+      style: styles.subLabelBlock
+    }, /*#__PURE__*/React.createElement("div", {
+      style: styles.subLabel
+    }, r.label), /*#__PURE__*/React.createElement("div", {
+      style: styles.subDetail
+    }, r.detail)), /*#__PURE__*/React.createElement("div", {
+      style: styles.subBarTrack
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        ...styles.subBarFill,
+        width: `${r.value}%`,
+        background: color
+      }
+    }), /*#__PURE__*/React.createElement("span", {
+      style: styles.subBarValue
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        color
+      }
+    }, getDimLabel(r.value)), /*#__PURE__*/React.createElement("span", {
+      style: styles.subBarNum
+    }, r.value))));
+  })));
+}
+
+// ── Archetype Profile ──────────────────────────────────────────────────────
+function ArchetypeProfile({
+  archetype,
+  industryName,
+  roleKey
+}) {
+  const a = archetypes[archetype];
+  if (!a) return null;
+  const rows = [{
+    label: "Your superpower",
+    value: a.superpower,
+    color: "#22c55e"
+  }, {
+    label: "Your shadow",
+    value: a.shadow,
+    color: "#f59e0b"
+  }, {
+    label: "Where you're winning",
+    value: a.winning,
+    color: "#3b82f6"
+  }, {
+    label: "Where you're leaking",
+    value: a.leaking,
+    color: "#f97316"
+  }, {
+    label: "Risk if nothing changes",
+    value: a.risk,
+    color: "#ef4444"
+  }];
+  return /*#__PURE__*/React.createElement("div", {
+    style: styles.section
+  }, /*#__PURE__*/React.createElement("h3", {
+    style: styles.sectionTitle
+  }, "Your AI Adoption Archetype"), /*#__PURE__*/React.createElement("div", {
+    style: styles.archCard
+  }, /*#__PURE__*/React.createElement("div", {
+    style: styles.archHeader
+  }, /*#__PURE__*/React.createElement("div", {
+    style: styles.archIcon
+  }, a.icon), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: styles.archTitle
+  }, a.title), /*#__PURE__*/React.createElement("div", {
+    style: styles.archPlain
+  }, a.plain))), /*#__PURE__*/React.createElement("p", {
+    style: styles.archDesc
+  }, a.description), roleOverlays[roleKey] && /*#__PURE__*/React.createElement("div", {
+    style: styles.roleLens
+  }, /*#__PURE__*/React.createElement("div", {
+    style: styles.roleLensLabel
+  }, "Through your seat · ", roleOverlays[roleKey].label), /*#__PURE__*/React.createElement("p", {
+    style: styles.roleLensText
+  }, roleOverlays[roleKey].archetypeLines[archetype] || roleOverlays[roleKey].lens)), /*#__PURE__*/React.createElement("div", {
+    style: styles.archRows
+  }, rows.map((r, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    style: styles.archRow
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      ...styles.archRowLabel,
+      color: r.color
+    }
+  }, r.label), /*#__PURE__*/React.createElement("div", {
+    style: styles.archRowValue
+  }, r.value))))));
+}
+
+// ── Action Map (30/60/90) ──────────────────────────────────────────────────
+function ActionMap({
+  archetype,
+  roleKey
+}) {
+  const a = archetypes[archetype];
+  if (!a) return null;
+  const overlay = roleOverlays[roleKey];
+  const isSolo = roleKey === "solo";
+  const acts = isSolo && a.actionsSolo ? {
+    ...a.actions,
+    ...a.actionsSolo
+  } : a.actions;
+  const steps = [{
+    label: "Next 30 days",
+    value: acts.thirty,
+    role: overlay && overlay.actions.thirty,
+    color: "#22c55e",
+    num: "30"
+  }, {
+    label: "Next 60 days",
+    value: acts.sixty,
+    role: overlay && overlay.actions.sixty,
+    color: "#3b82f6",
+    num: "60"
+  }, {
+    label: "Next 90 days",
+    value: acts.ninety,
+    role: overlay && overlay.actions.ninety,
+    color: "#E8541A",
+    num: "90"
+  }];
+  return /*#__PURE__*/React.createElement("div", {
+    style: styles.section
+  }, /*#__PURE__*/React.createElement("h3", {
+    style: styles.sectionTitle
+  }, "Your 30 / 60 / 90 Action Map"), /*#__PURE__*/React.createElement("div", {
+    style: styles.actionGrid
+  }, steps.map((s, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    style: {
+      ...styles.actionCard,
+      borderColor: `${s.color}55`
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      ...styles.actionNum,
+      color: s.color
+    }
+  }, s.num), /*#__PURE__*/React.createElement("div", {
+    style: styles.actionLabel
+  }, s.label), /*#__PURE__*/React.createElement("div", {
+    style: styles.actionValue
+  }, s.value), s.role && /*#__PURE__*/React.createElement("div", {
+    style: styles.actionRoleLine
+  }, s.role)))));
+}
+
+// ── Industry Benchmarks ────────────────────────────────────────────────────
+function IndustryBenchmarks({
+  industryIdx,
+  userRatio,
+  userColor
+}) {
+  const industry = industryBenchmarks[industryIdx] || industryBenchmarks[0];
+  const rows = [{
+    label: "Industry Average",
+    value: industry.avgRatio,
+    color: "#64748b"
+  }, {
+    label: "Top 25%",
+    value: industry.topQuartile,
+    color: "#06b6d4"
+  }, {
+    label: "Industry Leaders",
+    value: industry.leader,
+    color: "#22c55e"
+  }, {
+    label: "You",
+    value: userRatio,
+    color: userColor,
+    highlight: true
+  }].sort((a, b) => a.value - b.value);
+  const max = Math.max(...rows.map(r => r.value), 1.5);
+  return /*#__PURE__*/React.createElement("div", {
+    style: styles.section
+  }, /*#__PURE__*/React.createElement("h3", {
+    style: styles.sectionTitle
+  }, "How You Compare in ", industry.name), /*#__PURE__*/React.createElement("div", {
+    style: styles.benchCard
+  }, rows.map((r, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    style: styles.benchRow
+  }, /*#__PURE__*/React.createElement("div", {
+    style: styles.benchLabel
+  }, r.label), /*#__PURE__*/React.createElement("div", {
+    style: styles.benchBarTrack
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      ...styles.benchBarFill,
+      width: `${r.value / max * 100}%`,
+      background: r.color,
+      animation: r.highlight ? "benchPulse 1.8s ease-in-out infinite" : "none"
+    }
+  }), /*#__PURE__*/React.createElement("span", {
+    style: styles.benchValue
+  }, r.value.toFixed(2)))))));
+}
+
+// ── 90-Day Projection ──────────────────────────────────────────────────────
+function Projection({
+  userRatio
+}) {
+  const projected = Math.max(0, +(userRatio - NINETY_DAY_DRIFT).toFixed(2));
+  const today = getRatioTier(userRatio);
+  const future = getRatioTier(projected);
+  const tierChanged = today.label !== future.label;
+  return /*#__PURE__*/React.createElement("div", {
+    style: styles.section
+  }, /*#__PURE__*/React.createElement("h3", {
+    style: styles.sectionTitle
+  }, "Where You'll Be in 90 Days"), /*#__PURE__*/React.createElement("div", {
+    style: styles.projCard
+  }, /*#__PURE__*/React.createElement("div", {
+    style: styles.projSide
+  }, /*#__PURE__*/React.createElement("div", {
+    style: styles.projLabel
+  }, "Today"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      ...styles.projRatio,
+      color: today.color
+    }
+  }, userRatio.toFixed(2)), /*#__PURE__*/React.createElement("div", {
+    style: {
+      ...styles.projTier,
+      color: today.color
+    }
+  }, today.label)), /*#__PURE__*/React.createElement("div", {
+    style: styles.projArrow
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "32",
+    height: "32",
+    viewBox: "0 0 24 24",
+    fill: "none"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M5 12h14M13 6l6 6-6 6",
+    stroke: "#64748b",
+    strokeWidth: "2",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }))), /*#__PURE__*/React.createElement("div", {
+    style: styles.projSide
+  }, /*#__PURE__*/React.createElement("div", {
+    style: styles.projLabel
+  }, "90 Days From Now"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      ...styles.projRatio,
+      color: future.color
+    }
+  }, projected.toFixed(2)), /*#__PURE__*/React.createElement("div", {
+    style: {
+      ...styles.projTier,
+      color: future.color,
+      background: tierChanged ? "rgba(239,68,68,0.15)" : "transparent",
+      border: tierChanged ? "1px solid rgba(239,68,68,0.4)" : "none",
+      padding: tierChanged ? "2px 8px" : 0,
+      borderRadius: 99
+    }
+  }, future.label))), tierChanged && /*#__PURE__*/React.createElement("p", {
+    style: styles.projNote
+  }, "If you don't act, you'll drop a full tier in 90 days. The market won't wait."));
+}
+
+// ── Retake Modal ───────────────────────────────────────────────────────────
+function RetakeModal({
+  onClose,
+  onSubmit,
+  initialEmail = ""
+}) {
+  const [email, setEmail] = useState(initialEmail);
+  const [submitted, setSubmitted] = useState(false);
+  function handleSubmit(e) {
+    e.preventDefault();
+    if (!email || !email.includes("@")) return;
+    onSubmit(email);
+    setSubmitted(true);
+  }
+  return /*#__PURE__*/React.createElement("div", {
+    style: styles.modalOverlay,
+    onClick: onClose
+  }, /*#__PURE__*/React.createElement("div", {
+    style: styles.modalCard,
+    onClick: e => e.stopPropagation()
+  }, !submitted ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("h3", {
+    style: styles.modalTitle
+  }, "Get Re-Scored in 90 Days"), /*#__PURE__*/React.createElement("p", {
+    style: styles.modalSub
+  }, LEAD_WEBHOOK ? "We'll email you one time in 90 days with a link to retake the assessment. You'll see exactly how much the gap widened or closed." : "We'll log your 90-day re-score date and this browser will remember your current ratio. Retake it then and you'll see exactly how much the gap widened or closed."), /*#__PURE__*/React.createElement("form", {
+    onSubmit: handleSubmit
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "email",
+    value: email,
+    onChange: e => setEmail(e.target.value),
+    placeholder: "you@yourbusiness.com",
+    style: styles.modalInput,
+    required: true
+  }), /*#__PURE__*/React.createElement("button", {
+    type: "submit",
+    style: styles.modalBtn
+  }, "Set My 90-Day Reminder")), /*#__PURE__*/React.createElement("button", {
+    style: styles.modalClose,
+    onClick: onClose
+  }, "No thanks")) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    style: styles.modalCheck
+  }, "✓"), /*#__PURE__*/React.createElement("h3", {
+    style: styles.modalTitle
+  }, "You're set."), /*#__PURE__*/React.createElement("p", {
+    style: styles.modalSub
+  }, LEAD_WEBHOOK ? "We'll email you in 90 days to retake the assessment and see how much the gap has changed." : "Your 90-day re-score is logged. Come back then and your previous ratio will be waiting to compare against."), /*#__PURE__*/React.createElement("button", {
+    style: styles.modalBtn,
+    onClick: onClose
+  }, "Close"))));
+}
+
+// ── Share Score Card ───────────────────────────────────────────────────────
+function ShareCard({
+  cardRef,
+  userRatio,
+  label,
+  industryName,
+  archetypeTitle
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    ref: cardRef,
+    style: {
+      position: "absolute",
+      top: -9999,
+      left: -9999,
+      width: 1080,
+      height: 1080,
+      background: "linear-gradient(160deg, #1B2A4A 0%, #0f172a 100%)",
+      fontFamily: "'Plus Jakarta Sans', sans-serif",
+      color: "white",
+      padding: 80,
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "space-between"
+    }
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 28,
+      fontWeight: 600,
+      color: "#E8541A",
+      letterSpacing: 4,
+      textTransform: "uppercase"
+    }
+  }, "AI Adaptation Ratio"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 20,
+      color: "rgba(255,255,255,0.6)",
+      marginTop: 8
+    }
+  }, industryName)), /*#__PURE__*/React.createElement("div", {
+    style: {
+      textAlign: "center"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 300,
+      fontWeight: 800,
+      lineHeight: 1,
+      color: "white",
+      letterSpacing: -8
+    }
+  }, userRatio.toFixed(2)), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 24,
+      fontSize: 44,
+      fontWeight: 700,
+      color: "#E8541A"
+    }
+  }, label), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 12,
+      fontSize: 26,
+      color: "rgba(255,255,255,0.7)"
+    }
+  }, "Archetype: ", archetypeTitle)), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "flex-end"
+    }
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 22,
+      color: "rgba(255,255,255,0.5)"
+    }
+  }, "Get yours at"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 32,
+      fontWeight: 700,
+      color: "white",
+      marginTop: 4
+    }
+  }, SHARE_DOMAIN)), /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 80,
+      height: 80,
+      background: "#E8541A",
+      borderRadius: 20,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      fontSize: 40
+    }
+  }, "⚡")));
+}
+
+// ── Results Screen ─────────────────────────────────────────────────────────
+function BlockerCallout({
+  constraintIdx
+}) {
+  const c = constraintReflections[constraintIdx];
+  if (!c) return null;
+  return /*#__PURE__*/React.createElement("div", {
+    style: styles.section
+  }, /*#__PURE__*/React.createElement("h3", {
+    style: styles.sectionTitle
+  }, "Your Blocker, Reframed"), /*#__PURE__*/React.createElement("div", {
+    style: styles.blockerCard
+  }, /*#__PURE__*/React.createElement("p", {
+    style: styles.blockerQuote
+  }, "You said: \"", c.label, "\""), /*#__PURE__*/React.createElement("p", {
+    style: styles.blockerReframe
+  }, c.reframe), /*#__PURE__*/React.createElement("div", {
+    style: styles.blockerMove
+  }, /*#__PURE__*/React.createElement("span", {
+    style: styles.blockerMoveIcon
+  }, "→"), /*#__PURE__*/React.createElement("span", null, c.firstMove))));
+}
+function ResultsScreen({
+  adaptationRatio,
+  dims,
+  gaps,
+  archetype,
+  industryIdx,
+  priorRatio,
+  onOpenRetake,
+  constraintIdx,
+  painIdx,
+  roleKey,
+  guess,
+  intentIdx,
+  unlocked,
+  onUnlock
+}) {
+  const tier = getRatioTier(adaptationRatio);
+  const industry = industryBenchmarks[industryIdx] || industryBenchmarks[0];
+  const arch = archetypes[archetype];
+  const cardRef = useRef(null);
+  const [sharing, setSharing] = useState(false);
+  async function handleShare() {
+    if (!cardRef.current) return;
+    setSharing(true);
+    try {
+      const mod = await import("https://esm.sh/html-to-image@1.11.11");
+      const dataUrl = await mod.toPng(cardRef.current, {
+        cacheBust: true,
+        pixelRatio: 1
+      });
+      const link = document.createElement("a");
+      link.download = `ai-adaptation-ratio-${adaptationRatio.toFixed(2)}.png`;
+      link.href = dataUrl;
+      link.click();
+    } catch (e) {
+      console.error("Share card failed", e);
+      alert("Couldn't generate the card. Try again in a moment.");
+    } finally {
+      setSharing(false);
+    }
+  }
+  const isRetake = priorRatio !== null && priorRatio !== undefined;
+  const delta = isRetake ? +(adaptationRatio - priorRatio).toFixed(2) : 0;
+  function getRetakeInsight() {
+    if (delta >= 0.10) {
+      return `You closed the gap. Market moved ${NINETY_DAY_DRIFT.toFixed(2)} in this period and you moved ${(delta + NINETY_DAY_DRIFT).toFixed(2)}. That's real progress.`;
+    }
+    if (delta >= 0.01) {
+      return "Slight improvement, but the market moved faster. Net position: still slipping. The gap is widening even though you're trying.";
+    }
+    if (delta === 0) {
+      return `You stayed flat. The market moved ${NINETY_DAY_DRIFT.toFixed(2)}. Net position: ${NINETY_DAY_DRIFT.toFixed(2)} worse than 90 days ago.`;
+    }
+    return `Position got worse. The market moved ${NINETY_DAY_DRIFT.toFixed(2)} forward and you moved backward. Total gap widened by ${(Math.abs(delta) + NINETY_DAY_DRIFT).toFixed(2)}.`;
+  }
+  return /*#__PURE__*/React.createElement("div", {
+    style: styles.resultsWrap
+  }, intentIdx !== null && intentIdx !== undefined && INTENTS[intentIdx] && /*#__PURE__*/React.createElement("p", {
+    style: {
+      textAlign: "center",
+      fontSize: 13,
+      color: "#717171",
+      margin: "0 auto",
+      maxWidth: 480,
+      lineHeight: 1.5
+    }
+  }, INTENTS[intentIdx].resultsLine), isRetake ? /*#__PURE__*/React.createElement("div", {
+    style: styles.scoreSection
+  }, /*#__PURE__*/React.createElement("p", {
+    style: styles.retakeHeader
+  }, "Your 90-Day Re-Score"), /*#__PURE__*/React.createElement("div", {
+    style: styles.retakeRow
+  }, /*#__PURE__*/React.createElement("div", {
+    style: styles.retakeSide
+  }, /*#__PURE__*/React.createElement("div", {
+    style: styles.projLabel
+  }, "Previous"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      ...styles.projRatio,
+      color: "#64748b"
+    }
+  }, priorRatio.toFixed(2))), /*#__PURE__*/React.createElement("div", {
+    style: styles.retakeDelta
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 28,
+      fontWeight: 800,
+      color: delta > 0 ? "#22c55e" : delta < 0 ? "#ef4444" : "#64748b"
+    }
+  }, delta > 0 ? "↑" : delta < 0 ? "↓" : "→", " ", Math.abs(delta).toFixed(2))), /*#__PURE__*/React.createElement("div", {
+    style: styles.retakeSide
+  }, /*#__PURE__*/React.createElement("div", {
+    style: styles.projLabel
+  }, "Now"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      ...styles.projRatio,
+      color: tier.color
+    }
+  }, adaptationRatio.toFixed(2)), /*#__PURE__*/React.createElement("div", {
+    style: {
+      ...styles.projTier,
+      color: tier.color
+    }
+  }, tier.label))), /*#__PURE__*/React.createElement("div", {
+    style: styles.retakeInsight
+  }, getRetakeInsight())) : (() => {
+    const months = computeMonthsBehind(adaptationRatio);
+    const frame = getMonthsFrame(months);
+    const absMonths = Math.abs(months);
+    const heroNum = absMonths.toFixed(months === Math.round(months) ? 0 : 1);
+    const ahead = months < -0.5;
+    return /*#__PURE__*/React.createElement("div", {
+      style: styles.scoreSection
+    }, /*#__PURE__*/React.createElement("div", {
+      style: styles.monthsHero
+    }, /*#__PURE__*/React.createElement("div", {
+      style: styles.monthsPre
+    }, "YOU ARE"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        ...styles.monthsNumber,
+        color: frame.color
+      }
+    }, heroNum), /*#__PURE__*/React.createElement("div", {
+      style: styles.monthsUnit
+    }, "MONTHS ", ahead ? "AHEAD OF" : "BEHIND", " THE MARKET"), /*#__PURE__*/React.createElement("div", {
+      style: styles.monthsSub
+    }, "in ", industry.name)), /*#__PURE__*/React.createElement("p", {
+      style: {
+        ...styles.levelBadge,
+        color: tier.color,
+        borderColor: tier.color
+      }
+    }, unlocked ? `${arch.title} · ${tier.label}` : tier.label), /*#__PURE__*/React.createElement("p", {
+      style: {
+        fontSize: 13,
+        color: "#717171",
+        marginTop: 10
+      }
+    }, "AI Adaptation Ratio: ", /*#__PURE__*/React.createElement("b", {
+      style: {
+        color: tier.color
+      }
+    }, adaptationRatio.toFixed(2)), " · benchmark average 0.62"), /*#__PURE__*/React.createElement("p", {
+      style: styles.resultsSubtitle
+    }, months >= 12 ? "You're more than a year behind the market. This is not recoverable in one sprint. It's a 90-day rebuild." : months >= 6 ? "Half a year of AI progress separates you from the market. Every month you wait, you fall another month behind." : months >= 3 ? "A quarter behind the market. The gap is real but closeable inside 90 days if you move now." : months >= 0.5 ? "You're close to the market pace but falling behind slowly. A few targeted moves would flip this." : months > -0.5 ? "You're matching the market. The top quartile is pulling ahead though. Worth a look." : "You're running ahead. The leverage now is compounding your advantage before others catch up."));
+  })(), /*#__PURE__*/React.createElement(GuessDelta, {
+    guess: guess,
+    ratio: adaptationRatio
+  }), !unlocked && /*#__PURE__*/React.createElement(UnlockCard, {
+    onUnlock: onUnlock,
+    industryName: industry.name
+  }), unlocked && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(TrajectoryChart, {
+    userRatio: adaptationRatio
+  }), /*#__PURE__*/React.createElement(GapDoubleCountdown, {
+    userRatio: adaptationRatio
+  }), /*#__PURE__*/React.createElement(MarketDrift, {
+    userRatio: adaptationRatio
+  }), /*#__PURE__*/React.createElement(SubScoreBars, {
+    dims: dims
+  }), /*#__PURE__*/React.createElement(BlockerCallout, {
+    constraintIdx: constraintIdx
+  }), /*#__PURE__*/React.createElement(ArchetypeProfile, {
+    archetype: archetype,
+    industryName: industry.name,
+    roleKey: roleKey
+  }), /*#__PURE__*/React.createElement(IndustryBenchmarks, {
+    industryIdx: industryIdx,
+    userRatio: adaptationRatio,
+    userColor: tier.color
+  }), /*#__PURE__*/React.createElement(Projection, {
+    userRatio: adaptationRatio
+  }), gaps.length > 0 && /*#__PURE__*/React.createElement("div", {
+    style: styles.section
+  }, /*#__PURE__*/React.createElement("h3", {
+    style: styles.sectionTitle
+  }, "Your Top 3 Gaps"), gaps.map((gap, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    style: styles.gapCard
+  }, /*#__PURE__*/React.createElement("div", {
+    style: styles.gapHeader
+  }, /*#__PURE__*/React.createElement("span", {
+    style: styles.gapIcon
+  }, gap.icon), /*#__PURE__*/React.createElement("span", {
+    style: styles.gapTitle
+  }, gap.title), /*#__PURE__*/React.createElement("span", {
+    style: styles.gapScore
+  }, gap.score, "/100")), /*#__PURE__*/React.createElement("p", {
+    style: styles.gapDetail
+  }, gap.detail), i === 0 && painReflections[painIdx] && /*#__PURE__*/React.createElement("p", {
+    style: styles.gapPersonal
+  }, /*#__PURE__*/React.createElement("b", null, "In your case:"), " ", painReflections[painIdx].aiAngle), /*#__PURE__*/React.createElement("div", {
+    style: styles.gapStat
+  }, /*#__PURE__*/React.createElement("span", {
+    style: styles.gapStatIcon
+  }, "⏱"), gap.hoursFrom)))), /*#__PURE__*/React.createElement(ActionMap, {
+    archetype: archetype,
+    roleKey: roleKey
+  }), /*#__PURE__*/React.createElement("div", {
+    style: styles.section
+  }, /*#__PURE__*/React.createElement("h3", {
+    style: styles.sectionTitle
+  }, "Your #1 Recommended Move"), /*#__PURE__*/React.createElement("div", {
+    style: styles.useCaseCard
+  }, /*#__PURE__*/React.createElement("h4", {
+    style: styles.useCaseTitle
+  }, arch.useCase.title), /*#__PURE__*/React.createElement("p", {
+    style: styles.useCaseDesc
+  }, arch.useCase.desc), painReflections[painIdx] && /*#__PURE__*/React.createElement("p", {
+    style: styles.useCaseDesc
+  }, "Aim it at the time drain you named: ", /*#__PURE__*/React.createElement("b", null, painReflections[painIdx].short), ".", " ", painReflections[painIdx].quickWin), /*#__PURE__*/React.createElement("div", {
+    style: styles.useCaseRoi
+  }, /*#__PURE__*/React.createElement("span", {
+    style: styles.roiIcon
+  }, "💰"), /*#__PURE__*/React.createElement("span", null, arch.useCase.roi))))), /*#__PURE__*/React.createElement("div", {
+    style: styles.ctaSection
+  }, /*#__PURE__*/React.createElement("h3", {
+    style: styles.ctaTitle
+  }, "Close the Gap Before It Widens"), /*#__PURE__*/React.createElement("p", {
+    style: styles.ctaSubtitle
+  }, "In a free 30-minute call, we'll walk through your archetype, sub-scores, and action map, and map your first AI build.", " ", roleOverlays[roleKey] ? roleOverlays[roleKey].ctaLine : "", " No pitch. No pressure."), /*#__PURE__*/React.createElement("a", {
+    href: CAL_LINK,
+    target: "_blank",
+    rel: "noopener noreferrer",
+    style: styles.ctaBtn
+  }, "Book Your Free AI Audit →"), /*#__PURE__*/React.createElement("button", {
+    style: styles.ctaBtnSecondary,
+    onClick: onOpenRetake
+  }, "Get Your Ratio Re-Scored in 90 Days"), /*#__PURE__*/React.createElement("p", {
+    style: styles.ctaNote
+  }, "30 minutes · Free · No obligation")), unlocked && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("button", {
+    style: styles.shareBtn,
+    onClick: handleShare,
+    disabled: sharing
+  }, sharing ? "Generating..." : "📤 Share Your Ratio"), /*#__PURE__*/React.createElement(ShareCard, {
+    cardRef: cardRef,
+    userRatio: adaptationRatio,
+    label: tier.label,
+    industryName: industry.name,
+    archetypeTitle: arch.title
+  })));
+}
+
+// ── Main App ────────────────────────────────────────────────────────────────
+
+function App() {
+  const [screen, setScreen] = useState("intent");
+  const [step, setStep] = useState(0);
+  const [answers, setAnswers] = useState(() => {
+    // Hero chip = question 1 answered before the app was even reached
+    try {
+      const bt = sessionStorage.getItem("ratio-preanswer-bt");
+      if (bt !== null && bt !== "") return {
+        business_type: Number(bt)
+      };
+    } catch (e) {}
+    return {};
+  });
+  const [results, setResults] = useState(null);
+  const [showRetake, setShowRetake] = useState(false);
+  const [priorRatio, setPriorRatio] = useState(null);
+  const [userEmail, setUserEmail] = useState("");
+  const [intentIdx, setIntentIdx] = useState(null);
+  const [guess, setGuess] = useState(null);
+  const [unlocked, setUnlocked] = useState(false);
+
+  // Hero chips clicked after mount land here
+  useEffect(() => {
+    const onPre = e => {
+      setAnswers(prev => ({
+        ...prev,
+        business_type: e.detail
+      }));
+    };
+    window.addEventListener("ratio-preanswer", onPre);
+    return () => window.removeEventListener("ratio-preanswer", onPre);
+  }, []);
+  const visibleQuestions = questions.filter(q => !q.skipWhen || !q.skipWhen(answers));
+  const isSoloTrack = answers.team_size === 0;
+  const baseQ = visibleQuestions[step];
+  const currentQ = baseQ && baseQ.soloVariant && isSoloTrack ? {
+    ...baseQ,
+    ...baseQ.soloVariant
+  } : baseQ;
+  function handleIntentPick(idx) {
+    setIntentIdx(idx);
+    setScreen("quiz");
+    setStep(answers.business_type !== undefined ? 1 : 0);
+  }
+  function handleAnswer(val) {
+    setAnswers(prev => ({
+      ...prev,
+      [currentQ.id]: val
+    }));
+  }
+  function handleNext() {
+    if (step < visibleQuestions.length - 1) {
+      setStep(s => s + 1);
+    } else {
+      setScreen("guess");
+    }
+  }
+  function handleGuessSubmit(g) {
+    setGuess(g);
+    setScreen("loading");
+    setTimeout(() => {
+      const isSolo = answers.team_size === 0;
+      const dims = scoreDimensions(answers, isSolo);
+      const adaptationRatio = +(dims.overall / MARKET_BASELINE).toFixed(2);
+      const archetype = classifyArchetype(dims, isSolo);
+      const gaps = getTopGaps(dims);
+      const industryIdx = answers.business_type;
+      const constraintIdx = answers.constraint;
+      const painIdx = answers.biggest_pain;
+      const roleKey = resolveRole(answers);
+      setResults({
+        adaptationRatio,
+        dims,
+        archetype,
+        gaps,
+        industryIdx,
+        constraintIdx,
+        painIdx,
+        roleKey
+      });
+      setScreen("results");
+    }, 3800);
+  }
+
+  // The score already showed free. This fires the lead + the emailed copy.
+  function handleUnlock(email) {
+    if (!results) return;
+    setUserEmail(email);
+    const {
+      adaptationRatio,
+      dims,
+      archetype,
+      gaps,
+      industryIdx,
+      constraintIdx,
+      painIdx,
+      roleKey
+    } = results;
+    const industryInfo = industryBenchmarks[industryIdx] || industryBenchmarks[0];
+    const archetypeInfo = archetypes[archetype] || {};
+    const monthsBehind = computeMonthsBehind(adaptationRatio);
+    const constraintQ = questions.find(q => q.id === "constraint");
+    const painQ = questions.find(q => q.id === "biggest_pain");
+    saveLead(email, {
+      currentRatio: adaptationRatio,
+      monthsBehind,
+      status: monthsBehind >= 0.5 ? "behind" : monthsBehind <= -0.5 ? "ahead" : "even",
+      industryIdx,
+      industryName: industryInfo.name,
+      industryAvg: industryInfo.avgRatio,
+      industryTop: industryInfo.topQuartile,
+      archetypeKey: archetype,
+      archetypeTitle: archetypeInfo.title || "",
+      archetypePlain: archetypeInfo.plain || "",
+      topGaps: gaps.map(g => g.title),
+      topUseCase: archetypeInfo.useCase ? archetypeInfo.useCase.title : "",
+      topUseCaseDesc: archetypeInfo.useCase ? archetypeInfo.useCase.desc : "",
+      constraintIdx: constraintIdx ?? null,
+      constraintLabel: constraintQ && constraintQ.options[constraintIdx] != null ? constraintQ.options[constraintIdx] : "",
+      painIdx: painIdx ?? null,
+      painLabel: painQ && painQ.options[painIdx] != null ? painQ.options[painIdx] : "",
+      roleIdx: answers.role ?? null,
+      roleKey,
+      roleLabel: roleOverlays[roleKey] ? roleOverlays[roleKey].label : "",
+      teamSizeIdx: answers.team_size ?? null,
+      isSolo: roleKey === "solo",
+      intentIdx: intentIdx ?? null,
+      intentLabel: intentIdx !== null && INTENTS[intentIdx] ? INTENTS[intentIdx].label : "",
+      guess: guess ?? null,
+      guessDelta: guess !== null && guess !== undefined ? +(adaptationRatio - guess).toFixed(2) : null,
+      dimsSnapshot: dims,
+      resultsUrl: typeof window !== "undefined" ? window.location.href : ""
+    });
+    const prior = findPriorRetake(email);
+    if (prior && prior.currentRatio !== adaptationRatio) {
+      setPriorRatio(prior.currentRatio);
+    }
+    setUnlocked(true);
+  }
+  function handleBack() {
+    setStep(s => Math.max(0, s - 1));
+  }
+  function handleRetakeSubmit(email) {
+    if (!results) return;
+    const prior = findPriorRetake(email);
+    if (prior && prior.currentRatio !== results.adaptationRatio) {
+      setPriorRatio(prior.currentRatio);
+    }
+    saveRetake(email, results.adaptationRatio, results.industryIdx, results.archetype);
+  }
+  return /*#__PURE__*/React.createElement("div", {
+    style: styles.root
+  }, /*#__PURE__*/React.createElement("style", null, `
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Mono&display=swap');
+        * { box-sizing: border-box; }
+        body { margin: 0; }
+        button { cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; }
+        a { text-decoration: none; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes fadeUp {
+          from { opacity: 0; transform: translateY(16px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.5; }
+        }
+        @keyframes benchPulse {
+          0%, 100% { filter: brightness(1); box-shadow: 0 0 0 rgba(232,84,26,0); }
+          50% { filter: brightness(1.25); box-shadow: 0 0 18px rgba(232,84,26,0.5); }
+        }
+        @media (max-width: 640px) {
+          .months-hero-num { font-size: 88px !important; }
+          .ratio-hero-num { font-size: 72px !important; }
+          .bench-label { font-size: 12px !important; width: 96px !important; }
+          .drift-track-outer { height: 80px !important; }
+          .proj-card { flex-direction: column !important; gap: 12px !important; }
+          .proj-arrow svg { transform: rotate(90deg); }
+          .retake-row { flex-direction: column !important; gap: 12px !important; }
+          .action-grid { grid-template-columns: 1fr !important; }
+          .sub-row { flex-direction: column !important; align-items: stretch !important; gap: 6px !important; }
+          .sub-label-block { width: 100% !important; }
+        }
+      `), /*#__PURE__*/React.createElement("div", {
+    style: styles.container
+  }, screen === "intent" && /*#__PURE__*/React.createElement(IntentScreen, {
+    onPick: handleIntentPick
+  }), screen === "quiz" && /*#__PURE__*/React.createElement(QuestionCard, {
+    q: currentQ,
+    index: step,
+    total: visibleQuestions.length,
+    answer: answers[currentQ.id],
+    onAnswer: handleAnswer,
+    onNext: handleNext,
+    onBack: handleBack,
+    answers: answers,
+    isSolo: isSoloTrack
+  }), screen === "guess" && /*#__PURE__*/React.createElement(GuessScreen, {
+    onSubmit: handleGuessSubmit
+  }), screen === "loading" && /*#__PURE__*/React.createElement(LoadingScreen, null), screen === "results" && results && /*#__PURE__*/React.createElement(ResultsScreen, {
+    adaptationRatio: results.adaptationRatio,
+    dims: results.dims,
+    gaps: results.gaps,
+    archetype: results.archetype,
+    industryIdx: results.industryIdx,
+    priorRatio: priorRatio,
+    onOpenRetake: () => setShowRetake(true),
+    constraintIdx: results.constraintIdx,
+    painIdx: results.painIdx,
+    roleKey: results.roleKey,
+    guess: guess,
+    intentIdx: intentIdx,
+    unlocked: unlocked,
+    onUnlock: handleUnlock
+  })), showRetake && /*#__PURE__*/React.createElement(RetakeModal, {
+    onClose: () => setShowRetake(false),
+    onSubmit: handleRetakeSubmit,
+    initialEmail: userEmail
+  }));
+}
+
+// ── Styles ───────────────────────────────────────────────────────────────────
+
+const BRAND_NAVY = "#1B2A4A";
+const BRAND_ORANGE = "#E8541A";
+const styles = {
+  root: {
+    minHeight: "100vh",
+    background: "#fafafa",
+    display: "flex",
+    alignItems: "flex-start",
+    justifyContent: "center",
+    padding: "24px 16px 48px",
+    fontFamily: "'Plus Jakarta Sans', sans-serif"
+  },
+  container: {
+    width: "100%",
+    maxWidth: 560,
+    animation: "fadeUp 0.5s ease"
+  },
+  // Landing
+  landingWrap: {
+    background: "linear-gradient(160deg, #ffffff 0%, #ffffff 100%)",
+    border: "1px solid rgba(99,179,237,0.15)",
+    borderRadius: 24,
+    padding: "36px 28px",
+    position: "relative",
+    boxShadow: "0 0 60px rgba(99,179,237,0.07)"
+  },
+  freeBadge: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    background: `linear-gradient(135deg, ${BRAND_ORANGE}, #f97316)`,
+    color: "white",
+    fontWeight: 800,
+    fontSize: 11,
+    letterSpacing: 2,
+    padding: "6px 16px",
+    borderRadius: "0 24px 0 16px"
+  },
+  iconBox: {
+    width: 56,
+    height: 56,
+    background: `linear-gradient(135deg, ${BRAND_NAVY}, #0891b2)`,
+    borderRadius: 16,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 20
+  },
+  landingTitle: {
+    color: "#111111",
+    fontSize: 28,
+    fontWeight: 800,
+    margin: "0 0 12px",
+    lineHeight: 1.2
+  },
+  landingSubtitle: {
+    color: "#717171",
+    fontSize: 15,
+    margin: "0 0 28px",
+    lineHeight: 1.6
+  },
+  checkList: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 12,
+    marginBottom: 28
+  },
+  checkItem: {
+    display: "flex",
+    alignItems: "flex-start",
+    gap: 10,
+    color: "#3d3d3d",
+    fontSize: 14
+  },
+  checkIcon: {
+    color: BRAND_ORANGE,
+    fontWeight: 800,
+    flexShrink: 0,
+    marginTop: 1
+  },
+  primaryBtn: {
+    width: "100%",
+    padding: "16px",
+    background: `linear-gradient(135deg, ${BRAND_NAVY}, ${BRAND_ORANGE})`,
+    color: "white",
+    border: "none",
+    borderRadius: 14,
+    fontSize: 16,
+    fontWeight: 700,
+    letterSpacing: 0.3,
+    transition: "opacity 0.2s"
+  },
+  // Quiz Card
+  card: {
+    background: "#ffffff",
+    border: "1px solid rgba(255,255,255,0.08)",
+    borderRadius: 24,
+    padding: "28px 24px",
+    boxShadow: "0 20px 60px rgba(17,17,17,0.10)"
+  },
+  qHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 16
+  },
+  qLabel: {
+    color: "#717171",
+    fontSize: 13,
+    fontWeight: 600
+  },
+  qTimer: {
+    color: "#717171",
+    fontSize: 12
+  },
+  progressBar: {
+    height: 4,
+    background: "#f5f5f5",
+    borderRadius: 99,
+    marginBottom: 24,
+    overflow: "hidden"
+  },
+  progressFill: {
+    height: "100%",
+    background: "linear-gradient(90deg, #3b82f6, #06b6d4)",
+    borderRadius: 99,
+    transition: "width 0.4s ease"
+  },
+  qText: {
+    color: "#111111",
+    fontSize: 18,
+    fontWeight: 700,
+    margin: "0 0 8px",
+    lineHeight: 1.4
+  },
+  qSubtext: {
+    color: "#717171",
+    fontSize: 13,
+    margin: "0 0 20px"
+  },
+  optionsList: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 10,
+    marginBottom: 24
+  },
+  optionBtn: {
+    display: "flex",
+    alignItems: "flex-start",
+    gap: 12,
+    padding: "14px 16px",
+    background: "#f5f5f5",
+    border: "1px solid rgba(255,255,255,0.06)",
+    borderRadius: 12,
+    color: "#3d3d3d",
+    fontSize: 14,
+    textAlign: "left",
+    lineHeight: 1.4,
+    transition: "all 0.15s ease"
+  },
+  optionBtnSelected: {
+    background: "#FFF3EE",
+    border: "1.5px solid #E8541A",
+    color: "#111111"
+  },
+  optionRadio: {
+    width: 18,
+    height: 18,
+    borderRadius: "50%",
+    border: "2px solid #334155",
+    flexShrink: 0,
+    marginTop: 1,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    transition: "all 0.15s"
+  },
+  optionRadioSelected: {
+    border: "2px solid #3b82f6",
+    background: "rgba(59,130,246,0.2)"
+  },
+  optionRadioDot: {
+    width: 8,
+    height: 8,
+    borderRadius: "50%",
+    background: "#3b82f6"
+  },
+  navRow: {
+    display: "flex",
+    alignItems: "center",
+    gap: 12
+  },
+  backBtn: {
+    padding: "12px 20px",
+    background: "transparent",
+    border: "1px solid #334155",
+    borderRadius: 10,
+    color: "#717171",
+    fontSize: 14,
+    fontWeight: 600
+  },
+  nextBtn: {
+    padding: "12px 24px",
+    background: "linear-gradient(135deg, #3b82f6, #06b6d4)",
+    border: "none",
+    borderRadius: 10,
+    color: "white",
+    fontSize: 14,
+    fontWeight: 700,
+    transition: "opacity 0.2s"
+  },
+  // Loading
+  loadingWrap: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    minHeight: 320,
+    gap: 20,
+    padding: 40
+  },
+  loadingSpinner: {
+    width: 48,
+    height: 48,
+    border: "3px solid #f5f5f5",
+    borderTop: `3px solid ${BRAND_ORANGE}`,
+    borderRadius: "50%",
+    animation: "spin 0.8s linear infinite"
+  },
+  loadingMsg: {
+    color: "#717171",
+    fontSize: 15,
+    textAlign: "center",
+    animation: "pulse 1.2s ease infinite"
+  },
+  loadingBarWrap: {
+    width: "100%",
+    height: 6,
+    background: "#f5f5f5",
+    borderRadius: 99,
+    overflow: "hidden"
+  },
+  loadingBarFill: {
+    height: "100%",
+    background: `linear-gradient(90deg, ${BRAND_NAVY}, ${BRAND_ORANGE})`,
+    borderRadius: 99,
+    transition: "width 0.08s linear"
+  },
+  loadingPct: {
+    color: BRAND_ORANGE,
+    fontSize: 13,
+    fontWeight: 700,
+    fontFamily: "'DM Mono', monospace"
+  },
+  // Results
+  resultsWrap: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 20
+  },
+  scoreSection: {
+    background: `linear-gradient(160deg, ${BRAND_NAVY} 0%, #ffffff 100%)`,
+    border: "1px solid rgba(232,84,26,0.2)",
+    borderRadius: 24,
+    padding: "32px 24px",
+    textAlign: "center"
+  },
+  monthsHero: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: 4
+  },
+  monthsPre: {
+    color: "#717171",
+    fontSize: 11,
+    fontWeight: 800,
+    letterSpacing: 3
+  },
+  monthsNumber: {
+    fontSize: 128,
+    fontWeight: 800,
+    lineHeight: 1,
+    letterSpacing: -4,
+    fontFamily: "'Plus Jakarta Sans', sans-serif",
+    className: "months-hero-num"
+  },
+  monthsUnit: {
+    color: "#111111",
+    fontSize: 14,
+    fontWeight: 800,
+    letterSpacing: 2,
+    marginTop: 6
+  },
+  monthsSub: {
+    color: "#717171",
+    fontSize: 13,
+    fontWeight: 500,
+    marginTop: 2
+  },
+  // Trajectory chart
+  trajSub: {
+    color: "#717171",
+    fontSize: 13,
+    margin: "0 0 4px",
+    lineHeight: 1.5,
+    paddingLeft: 4
+  },
+  trajChartWrap: {
+    background: "rgba(15,23,42,0.5)",
+    border: "1px solid rgba(255,255,255,0.06)",
+    borderRadius: 12,
+    padding: "12px 10px 6px"
+  },
+  trajStatsRow: {
+    display: "grid",
+    gridTemplateColumns: "1fr 1fr",
+    gap: 10,
+    marginTop: 6
+  },
+  trajStat: {
+    background: "rgba(15,23,42,0.6)",
+    border: "1px solid rgba(255,255,255,0.06)",
+    borderRadius: 10,
+    padding: "10px 12px"
+  },
+  trajStatLabel: {
+    color: "#717171",
+    fontSize: 10,
+    fontWeight: 800,
+    letterSpacing: 1.5,
+    textTransform: "uppercase",
+    marginBottom: 4
+  },
+  trajStatValue: {
+    fontSize: 18,
+    fontWeight: 800,
+    fontFamily: "'DM Mono', monospace"
+  },
+  // Countdown card
+  countdownCard: {
+    display: "flex",
+    gap: 14,
+    alignItems: "center",
+    background: "linear-gradient(135deg, rgba(239,68,68,0.1), rgba(239,68,68,0.02))",
+    border: "1px solid rgba(239,68,68,0.4)",
+    borderRadius: 16,
+    padding: "16px 18px"
+  },
+  countdownIcon: {
+    fontSize: 32,
+    flexShrink: 0
+  },
+  countdownTextBlock: {
+    flex: 1
+  },
+  countdownLabel: {
+    color: "#fca5a5",
+    fontSize: 11,
+    fontWeight: 800,
+    letterSpacing: 1.5,
+    textTransform: "uppercase",
+    marginBottom: 4
+  },
+  countdownValue: {
+    color: "white",
+    fontSize: 17,
+    fontWeight: 700,
+    lineHeight: 1.3
+  },
+  countdownSub: {
+    color: "#717171",
+    fontSize: 12,
+    marginTop: 4
+  },
+  ratioHero: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center"
+  },
+  ratioNumber: {
+    fontSize: 96,
+    fontWeight: 800,
+    lineHeight: 1,
+    letterSpacing: -2,
+    fontFamily: "'Plus Jakarta Sans', sans-serif",
+    className: "ratio-hero-num"
+  },
+  ratioSub: {
+    color: "#717171",
+    fontSize: 12,
+    fontWeight: 600,
+    letterSpacing: 2,
+    textTransform: "uppercase",
+    marginTop: 8
+  },
+  levelBadge: {
+    display: "inline-block",
+    fontSize: 12,
+    fontWeight: 800,
+    letterSpacing: 2,
+    border: "1px solid",
+    borderRadius: 99,
+    padding: "4px 14px",
+    marginTop: 16,
+    textTransform: "uppercase"
+  },
+  resultsTitle: {
+    color: "#111111",
+    fontSize: 22,
+    fontWeight: 800,
+    margin: "16px 0 8px"
+  },
+  resultsSubtitle: {
+    color: "#717171",
+    fontSize: 14,
+    lineHeight: 1.6,
+    margin: 0
+  },
+  retakeHeader: {
+    color: BRAND_ORANGE,
+    fontSize: 12,
+    fontWeight: 800,
+    letterSpacing: 3,
+    textTransform: "uppercase",
+    margin: "0 0 16px"
+  },
+  retakeRow: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 16,
+    className: "retake-row"
+  },
+  retakeSide: {
+    flex: 1,
+    textAlign: "center"
+  },
+  retakeDelta: {
+    flexShrink: 0,
+    padding: "0 8px"
+  },
+  retakeInsight: {
+    marginTop: 20,
+    padding: "14px 16px",
+    background: "rgba(232,84,26,0.1)",
+    border: "1px solid rgba(232,84,26,0.3)",
+    borderRadius: 12,
+    color: "#fde68a",
+    fontSize: 14,
+    lineHeight: 1.5,
+    textAlign: "left"
+  },
+  section: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 12
+  },
+  sectionTitle: {
+    color: "#111111",
+    fontSize: 16,
+    fontWeight: 800,
+    margin: 0,
+    paddingLeft: 4
+  },
+  // Sub-scores
+  subScoreCard: {
+    background: "#ffffff",
+    border: "1px solid rgba(255,255,255,0.07)",
+    borderRadius: 16,
+    padding: "18px 20px",
+    display: "flex",
+    flexDirection: "column",
+    gap: 16
+  },
+  subRow: {
+    display: "flex",
+    alignItems: "center",
+    gap: 14,
+    className: "sub-row"
+  },
+  subLabelBlock: {
+    width: 170,
+    flexShrink: 0,
+    className: "sub-label-block"
+  },
+  subLabel: {
+    color: "#111111",
+    fontSize: 14,
+    fontWeight: 700,
+    lineHeight: 1.2
+  },
+  subDetail: {
+    color: "#717171",
+    fontSize: 11,
+    fontWeight: 500,
+    marginTop: 2,
+    lineHeight: 1.3
+  },
+  subBarTrack: {
+    flex: 1,
+    height: 28,
+    background: "#f5f5f5",
+    borderRadius: 6,
+    position: "relative",
+    overflow: "hidden"
+  },
+  subBarFill: {
+    height: "100%",
+    borderRadius: 6,
+    transition: "width 0.8s ease"
+  },
+  subBarValue: {
+    position: "absolute",
+    right: 10,
+    top: "50%",
+    transform: "translateY(-50%)",
+    display: "flex",
+    alignItems: "center",
+    gap: 8,
+    fontSize: 11,
+    fontWeight: 700,
+    textTransform: "uppercase",
+    letterSpacing: 1,
+    textShadow: "0 1px 2px rgba(17,17,17,0.20)"
+  },
+  subBarNum: {
+    color: "#111111",
+    fontFamily: "'DM Mono', monospace"
+  },
+  // Archetype
+  archCard: {
+    background: `linear-gradient(160deg, ${BRAND_NAVY} 0%, #ffffff 100%)`,
+    border: "1px solid rgba(232,84,26,0.25)",
+    borderRadius: 20,
+    padding: "24px 22px"
+  },
+  archHeader: {
+    display: "flex",
+    alignItems: "center",
+    gap: 14,
+    marginBottom: 14
+  },
+  archIcon: {
+    fontSize: 36,
+    width: 56,
+    height: 56,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    background: "rgba(232,84,26,0.12)",
+    border: "1px solid rgba(232,84,26,0.3)",
+    borderRadius: 14,
+    flexShrink: 0
+  },
+  archTitle: {
+    color: "#111111",
+    fontSize: 20,
+    fontWeight: 800,
+    lineHeight: 1.2
+  },
+  archPlain: {
+    color: BRAND_ORANGE,
+    fontSize: 12,
+    fontWeight: 700,
+    letterSpacing: 1,
+    textTransform: "uppercase",
+    marginTop: 4
+  },
+  archDesc: {
+    color: "#3d3d3d",
+    fontSize: 14,
+    lineHeight: 1.6,
+    margin: "0 0 18px"
+  },
+  roleLens: {
+    background: "rgba(232,84,26,0.06)",
+    border: "1px solid rgba(232,84,26,0.2)",
+    borderRadius: 10,
+    padding: "12px 14px",
+    margin: "0 0 18px"
+  },
+  roleLensLabel: {
+    color: BRAND_ORANGE,
+    fontSize: 10,
+    fontWeight: 800,
+    letterSpacing: "0.12em",
+    textTransform: "uppercase",
+    marginBottom: 6
+  },
+  roleLensText: {
+    color: "#3d3d3d",
+    fontSize: 13,
+    lineHeight: 1.6,
+    margin: 0
+  },
+  archRows: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 12
+  },
+  archRow: {
+    padding: "12px 14px",
+    background: "#fafafa",
+    border: "1px solid rgba(255,255,255,0.05)",
+    borderRadius: 10
+  },
+  archRowLabel: {
+    fontSize: 10,
+    fontWeight: 800,
+    letterSpacing: 1.5,
+    textTransform: "uppercase",
+    marginBottom: 4
+  },
+  archRowValue: {
+    color: "#1a1a1a",
+    fontSize: 13,
+    lineHeight: 1.55
+  },
+  // Action Map
+  actionGrid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(3, 1fr)",
+    gap: 10,
+    className: "action-grid"
+  },
+  actionCard: {
+    background: "#ffffff",
+    border: "1px solid rgba(255,255,255,0.1)",
+    borderRadius: 14,
+    padding: "16px 14px"
+  },
+  actionNum: {
+    fontSize: 28,
+    fontWeight: 800,
+    lineHeight: 1,
+    fontFamily: "'DM Mono', monospace",
+    marginBottom: 4
+  },
+  actionLabel: {
+    color: "#717171",
+    fontSize: 10,
+    fontWeight: 700,
+    letterSpacing: 1,
+    textTransform: "uppercase",
+    marginBottom: 10
+  },
+  actionValue: {
+    color: "#1a1a1a",
+    fontSize: 13,
+    lineHeight: 1.5
+  },
+  actionRoleLine: {
+    color: "#717171",
+    fontSize: 12,
+    lineHeight: 1.5,
+    marginTop: 10,
+    paddingTop: 10,
+    borderTop: "1px dashed #d4d4d4",
+    fontStyle: "italic"
+  },
+  // Market Drift
+  driftWrap: {
+    background: "#ffffff",
+    border: "1px solid rgba(255,255,255,0.07)",
+    borderRadius: 20,
+    padding: "22px 20px 18px",
+    display: "flex",
+    flexDirection: "column",
+    gap: 14
+  },
+  driftTrackOuter: {
+    position: "relative",
+    height: 100,
+    marginTop: 16,
+    className: "drift-track-outer"
+  },
+  driftTrack: {
+    position: "absolute",
+    top: "50%",
+    left: 0,
+    right: 0,
+    height: 2,
+    background: "linear-gradient(90deg, #22c55e 0%, #f59e0b 50%, #ef4444 100%)",
+    borderRadius: 2,
+    transform: "translateY(-50%)"
+  },
+  driftDotWrap: {
+    position: "absolute",
+    top: "50%",
+    transform: "translate(-50%, -50%)",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: 4
+  },
+  driftDot: {
+    width: 14,
+    height: 14,
+    borderRadius: "50%",
+    border: "2px solid #fafafa"
+  },
+  driftLabelTop: {
+    position: "absolute",
+    bottom: 22,
+    fontSize: 10,
+    fontWeight: 700,
+    color: "#3d3d3d",
+    letterSpacing: 1,
+    textTransform: "uppercase",
+    whiteSpace: "nowrap"
+  },
+  driftValue: {
+    position: "absolute",
+    top: 22,
+    fontSize: 11,
+    fontWeight: 700,
+    color: "#717171",
+    fontFamily: "'DM Mono', monospace"
+  },
+  tickMark: {
+    position: "absolute",
+    top: "50%",
+    width: 1,
+    height: 8,
+    background: "#d4d4d4",
+    transform: "translate(-50%, -50%)"
+  },
+  tickLabel: {
+    position: "absolute",
+    top: 14,
+    left: "50%",
+    transform: "translateX(-50%)",
+    fontSize: 9,
+    color: "#a3a3a3",
+    fontFamily: "'DM Mono', monospace"
+  },
+  driftCounter: {
+    color: "#717171",
+    fontSize: 13,
+    margin: 0,
+    textAlign: "center",
+    lineHeight: 1.5
+  },
+  // Benchmarks
+  benchCard: {
+    background: "#ffffff",
+    border: "1px solid rgba(255,255,255,0.07)",
+    borderRadius: 16,
+    padding: "18px 20px",
+    display: "flex",
+    flexDirection: "column",
+    gap: 14
+  },
+  benchRow: {
+    display: "flex",
+    alignItems: "center",
+    gap: 12
+  },
+  benchLabel: {
+    width: 130,
+    flexShrink: 0,
+    color: "#3d3d3d",
+    fontSize: 13,
+    fontWeight: 600,
+    className: "bench-label"
+  },
+  benchBarTrack: {
+    flex: 1,
+    height: 22,
+    background: "#f5f5f5",
+    borderRadius: 6,
+    position: "relative",
+    overflow: "hidden"
+  },
+  benchBarFill: {
+    height: "100%",
+    borderRadius: 6,
+    transition: "width 0.8s ease"
+  },
+  benchValue: {
+    position: "absolute",
+    right: 8,
+    top: "50%",
+    transform: "translateY(-50%)",
+    color: "white",
+    fontSize: 11,
+    fontWeight: 700,
+    fontFamily: "'DM Mono', monospace",
+    textShadow: "0 1px 2px rgba(17,17,17,0.20)"
+  },
+  // Projection
+  projCard: {
+    background: "#ffffff",
+    border: "1px solid rgba(255,255,255,0.07)",
+    borderRadius: 16,
+    padding: "20px",
+    display: "flex",
+    alignItems: "center",
+    gap: 12,
+    className: "proj-card"
+  },
+  projSide: {
+    flex: 1,
+    textAlign: "center"
+  },
+  projLabel: {
+    color: "#717171",
+    fontSize: 11,
+    fontWeight: 700,
+    letterSpacing: 1.5,
+    textTransform: "uppercase",
+    marginBottom: 6
+  },
+  projRatio: {
+    fontSize: 36,
+    fontWeight: 800,
+    lineHeight: 1,
+    marginBottom: 6
+  },
+  projTier: {
+    fontSize: 12,
+    fontWeight: 700
+  },
+  projArrow: {
+    flexShrink: 0,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    className: "proj-arrow"
+  },
+  projNote: {
+    color: "#fca5a5",
+    fontSize: 13,
+    fontWeight: 600,
+    margin: "4px 0 0",
+    paddingLeft: 4,
+    lineHeight: 1.5
+  },
+  // Gaps
+  gapCard: {
+    background: "#ffffff",
+    border: "1px solid rgba(255,255,255,0.07)",
+    borderRadius: 16,
+    padding: "18px 20px"
+  },
+  gapHeader: {
+    display: "flex",
+    alignItems: "center",
+    gap: 10,
+    marginBottom: 8
+  },
+  gapIcon: {
+    fontSize: 20
+  },
+  gapTitle: {
+    color: "#111111",
+    fontWeight: 700,
+    fontSize: 15,
+    flex: 1
+  },
+  gapScore: {
+    color: "#717171",
+    fontSize: 11,
+    fontWeight: 700,
+    fontFamily: "'DM Mono', monospace"
+  },
+  gapDetail: {
+    color: "#717171",
+    fontSize: 13,
+    lineHeight: 1.6,
+    margin: "0 0 12px"
+  },
+  gapPersonal: {
+    color: "#3d3d3d",
+    fontSize: 13,
+    lineHeight: 1.6,
+    margin: "0 0 12px",
+    padding: "10px 12px",
+    background: "rgba(232,84,26,0.06)",
+    border: "1px solid rgba(232,84,26,0.2)",
+    borderRadius: 10
+  },
+  gapStat: {
+    display: "flex",
+    alignItems: "center",
+    gap: 6,
+    color: "#f59e0b",
+    fontSize: 12,
+    fontWeight: 600
+  },
+  gapStatIcon: {
+    fontSize: 14
+  },
+  // Blocker reflect-back
+  blockerCard: {
+    background: "#ffffff",
+    border: "1px solid #d4d4d4",
+    borderRadius: 16,
+    padding: "20px"
+  },
+  blockerQuote: {
+    color: "#717171",
+    fontSize: 13,
+    fontStyle: "italic",
+    margin: "0 0 10px"
+  },
+  blockerReframe: {
+    color: "#3d3d3d",
+    fontSize: 14,
+    lineHeight: 1.6,
+    margin: "0 0 14px"
+  },
+  blockerMove: {
+    display: "flex",
+    alignItems: "flex-start",
+    gap: 8,
+    color: "#111111",
+    fontSize: 13,
+    fontWeight: 700,
+    lineHeight: 1.5,
+    padding: "10px 12px",
+    background: "rgba(232,84,26,0.06)",
+    border: "1px solid rgba(232,84,26,0.2)",
+    borderRadius: 10
+  },
+  blockerMoveIcon: {
+    color: BRAND_ORANGE,
+    fontWeight: 800,
+    flexShrink: 0
+  },
+  // Use case
+  useCaseCard: {
+    background: "linear-gradient(135deg, rgba(27,42,74,0.5), rgba(232,84,26,0.08))",
+    border: "1px solid rgba(232,84,26,0.25)",
+    borderRadius: 16,
+    padding: "20px"
+  },
+  useCaseTitle: {
+    color: "#111111",
+    fontWeight: 800,
+    fontSize: 17,
+    margin: "0 0 8px"
+  },
+  useCaseDesc: {
+    color: "#3d3d3d",
+    fontSize: 14,
+    lineHeight: 1.6,
+    margin: "0 0 14px"
+  },
+  useCaseRoi: {
+    display: "flex",
+    alignItems: "flex-start",
+    gap: 8,
+    color: "#22c55e",
+    fontSize: 13,
+    fontWeight: 600,
+    lineHeight: 1.4
+  },
+  roiIcon: {
+    fontSize: 16,
+    flexShrink: 0
+  },
+  // CTA
+  ctaSection: {
+    background: `linear-gradient(135deg, ${BRAND_NAVY} 0%, #fafafa 100%)`,
+    border: `1px solid ${BRAND_ORANGE}`,
+    borderRadius: 24,
+    padding: "28px 24px",
+    textAlign: "center"
+  },
+  ctaTitle: {
+    color: "#111111",
+    fontSize: 22,
+    fontWeight: 800,
+    margin: "0 0 12px",
+    lineHeight: 1.3
+  },
+  ctaSubtitle: {
+    color: "#3d3d3d",
+    fontSize: 14,
+    lineHeight: 1.6,
+    margin: "0 0 20px"
+  },
+  ctaBtn: {
+    display: "block",
+    padding: "16px 24px",
+    background: BRAND_ORANGE,
+    color: "#ffffff",
+    borderRadius: 14,
+    fontSize: 15,
+    fontWeight: 800,
+    marginBottom: 10
+  },
+  ctaBtnSecondary: {
+    display: "block",
+    width: "100%",
+    padding: "14px 24px",
+    background: "transparent",
+    color: "#111111",
+    border: "1px solid rgba(255,255,255,0.3)",
+    borderRadius: 14,
+    fontSize: 14,
+    fontWeight: 700,
+    marginBottom: 12
+  },
+  ctaNote: {
+    color: "#717171",
+    fontSize: 12,
+    margin: 0
+  },
+  shareBtn: {
+    padding: "12px 20px",
+    background: "transparent",
+    border: "1px solid #334155",
+    borderRadius: 12,
+    color: "#3d3d3d",
+    fontSize: 13,
+    fontWeight: 600,
+    alignSelf: "center"
+  },
+  // Modal
+  modalOverlay: {
+    position: "fixed",
+    inset: 0,
+    background: "rgba(17,17,17,0.55)",
+    backdropFilter: "blur(6px)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 16,
+    zIndex: 50
+  },
+  modalCard: {
+    width: "100%",
+    maxWidth: 420,
+    background: BRAND_NAVY,
+    border: `1px solid ${BRAND_ORANGE}`,
+    borderRadius: 20,
+    padding: "28px 24px",
+    textAlign: "center",
+    fontFamily: "'Plus Jakarta Sans', sans-serif"
+  },
+  modalTitle: {
+    color: "#111111",
+    fontSize: 20,
+    fontWeight: 800,
+    margin: "0 0 10px"
+  },
+  modalSub: {
+    color: "#3d3d3d",
+    fontSize: 14,
+    lineHeight: 1.5,
+    margin: "0 0 18px"
+  },
+  modalInput: {
+    width: "100%",
+    padding: "14px 16px",
+    background: "#ffffff",
+    border: "1px solid #d4d4d4",
+    borderRadius: 12,
+    color: "#111111",
+    fontSize: 14,
+    fontFamily: "'Plus Jakarta Sans', sans-serif",
+    marginBottom: 12
+  },
+  modalBtn: {
+    width: "100%",
+    padding: "14px",
+    background: BRAND_ORANGE,
+    color: "white",
+    border: "none",
+    borderRadius: 12,
+    fontSize: 14,
+    fontWeight: 800,
+    letterSpacing: 0.3
+  },
+  modalClose: {
+    marginTop: 14,
+    background: "transparent",
+    border: "none",
+    color: "#717171",
+    fontSize: 13,
+    fontWeight: 600
+  },
+  modalCheck: {
+    width: 56,
+    height: 56,
+    margin: "0 auto 16px",
+    background: BRAND_ORANGE,
+    color: "white",
+    borderRadius: "50%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: 28,
+    fontWeight: 800
+  },
+  gateCard: {
+    width: "100%",
+    maxWidth: 460,
+    background: "linear-gradient(180deg, #ffffff 0%, #fafafa 100%)",
+    border: "1px solid rgba(232,84,26,0.35)",
+    borderRadius: 20,
+    padding: "32px 28px",
+    textAlign: "center",
+    fontFamily: "'Plus Jakarta Sans', sans-serif",
+    boxShadow: "0 18px 60px rgba(17,17,17,0.10)",
+    animation: "fadeUp 0.35s ease"
+  },
+  gateBadge: {
+    display: "inline-block",
+    fontSize: 11,
+    fontWeight: 800,
+    letterSpacing: 2,
+    color: "#E8541A",
+    background: "rgba(232,84,26,0.12)",
+    border: "1px solid rgba(232,84,26,0.35)",
+    padding: "5px 12px",
+    borderRadius: 100,
+    marginBottom: 16
+  },
+  gateTitle: {
+    color: "#111111",
+    fontSize: 24,
+    fontWeight: 800,
+    letterSpacing: -0.5,
+    margin: "0 0 10px",
+    lineHeight: 1.2
+  },
+  gateSub: {
+    color: "#3d3d3d",
+    fontSize: 14,
+    lineHeight: 1.6,
+    margin: "0 0 22px"
+  },
+  gateError: {
+    color: "#ef4444",
+    fontSize: 12,
+    fontWeight: 600,
+    textAlign: "left",
+    marginBottom: 10
+  },
+  pillarLabel: {
+    fontSize: 11,
+    fontWeight: 800,
+    letterSpacing: 2,
+    color: "#717171",
+    textAlign: "left",
+    margin: "4px 0 14px"
+  },
+  pillarList: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 14,
+    marginBottom: 24
+  },
+  pillarItem: {
+    display: "flex",
+    gap: 14,
+    alignItems: "flex-start",
+    textAlign: "left",
+    padding: "12px 14px",
+    background: "#e5e5e5",
+    border: "1px solid rgba(255,255,255,0.08)",
+    borderRadius: 12
+  },
+  pillarIcon: {
+    fontSize: 22,
+    width: 40,
+    height: 40,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    background: "rgba(232,84,26,0.12)",
+    border: "1px solid rgba(232,84,26,0.3)",
+    borderRadius: 10,
+    flexShrink: 0
+  },
+  pillarName: {
+    color: "#111111",
+    fontSize: 15,
+    fontWeight: 800,
+    letterSpacing: -0.2,
+    marginBottom: 4
+  },
+  pillarDesc: {
+    color: "#3d3d3d",
+    fontSize: 13.5,
+    lineHeight: 1.55
+  },
+  metaCard: {
+    background: "rgba(232,84,26,0.08)",
+    border: "1px solid rgba(232,84,26,0.25)",
+    borderRadius: 12,
+    padding: "14px 16px",
+    marginBottom: 22,
+    textAlign: "left"
+  },
+  metaRow: {
+    display: "flex",
+    gap: 10,
+    alignItems: "center",
+    color: "#111111",
+    fontSize: 14,
+    fontWeight: 500,
+    marginBottom: 6
+  },
+  metaIcon: {
+    fontSize: 15
+  },
+  metaBody: {
+    color: "#3d3d3d",
+    fontSize: 13,
+    lineHeight: 1.55
+  },
+  gateMetaRow: {
+    display: "flex",
+    justifyContent: "center",
+    gap: 18,
+    marginTop: 16,
+    fontSize: 12,
+    color: "#717171",
+    flexWrap: "wrap"
+  }
+};
+ReactDOM.createRoot(document.getElementById("assessment-root")).render(/*#__PURE__*/React.createElement(App, null));
+
+</script>
+</body>
+</html>
