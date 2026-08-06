@@ -905,7 +905,9 @@
   /* ─── RESPONSIVE ────────────────────────────────────────── */
   @media (max-width: 960px) {
     .hero-inner { grid-template-columns: 1fr; gap: 48px; }
-    .hero-visual { order: -1; max-width: 480px; margin: 0 auto; }
+    /* Headline and question 1 stay first on small screens. The report preview
+       is proof, and proof belongs after the hook, not in front of it. */
+    .hero-visual { max-width: 480px; margin: 0 auto; }
     .stat-grid { grid-template-columns: repeat(2, 1fr); gap: 24px; }
     .steps { grid-template-columns: repeat(2, 1fr); }
     .get-grid { grid-template-columns: repeat(2, 1fr); }
