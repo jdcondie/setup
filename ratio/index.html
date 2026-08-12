@@ -1884,7 +1884,7 @@ function saveRetake(email, currentRatio, industryIdx, archetypeKey) {
     storage.setItem(`retake-reminders:${email}`, JSON.stringify(payload));
   } catch (e) {}
 }
-const LEAD_WEBHOOK = ""; // Zapier/Resend/Make endpoint. Empty = local storage only.
+const LEAD_WEBHOOK = "https://script.google.com/macros/s/AKfycby68yg4bNjnuAWJEC2lu2Bgk_4t1Czb5-tgfR9xhWIjG-5f888l7a8nanlgYYdDC2zf/exec"; // ratio-intake.gs web app. Empty = local storage only.
 
 function saveLead(email, data) {
   const payload = {
@@ -1903,8 +1903,10 @@ function saveLead(email, data) {
     try {
       fetch(LEAD_WEBHOOK, {
         method: "POST",
+        // text/plain avoids the CORS preflight Apps Script can't answer;
+        // the .gs parses e.postData.contents as JSON either way.
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "text/plain;charset=utf-8"
         },
         body: JSON.stringify(payload),
         keepalive: true
